@@ -231,6 +231,7 @@
         var roomsRow = $('#roomCard');
 
         roomsRow.empty();
+        roomsRow.append(`<h2 class="bestselling"> Your Favorite </h2>`);
 
         for(i = 0 ;i<kind_data.length;i++)
         {

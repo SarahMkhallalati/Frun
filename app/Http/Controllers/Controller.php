@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classified;
+use App\Models\CustomerFurniture;
 use App\Models\Fruniture;
 use App\Models\Furniture;
 use GrahamCampbell\ResultType\Result;
@@ -47,18 +48,28 @@ class Controller extends BaseController
         return view('design_room',['rooms' => $bedRooms]);
     }
 
-    public function GetClassified(Request $request)
+    public function CreatFav(Request $request)
     {
-        $classified = Classified::get();
+        $classified = Classified::where("fru-id",$request->get("ID"))->first();
+        $customerFur = Classified::where("cust-id",1)->where("classified-id",$classified->ID)->first();
+        if(empty($customerFur))
+        {CustomerFurniture::create([
+            "cust-id" => 1,
+            "classified-id"=> $classified->ID
+        ]);
         return Response()->json(['Classified' => $classified],200);
-
+        }
+        return Response()->json(['message' => "already exist"],401);
     }
 
 
     public function getKind(Request $request)
     {
         $kind = $request->get('kind');
-        $kindData = Furniture::getDataByKind($kind);
+        $favorites = Classified::where("cls-id", $kind)
+            ->join('cus_furn', 'classified.ID', '=', 'cus_furn.classified-id')
+            ->get();
+        $kindData = Furniture::whereIn("ID",$favorites->pluck("fru-id"))->get();
         return Response()->json(['kind_data' => $kindData],200);
     }
 

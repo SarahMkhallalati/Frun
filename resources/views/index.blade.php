@@ -42,26 +42,21 @@
 
 @section('scripts')
 <script>
-
+var AddFav = document.getElementById("AddToFavBT");
     function AddToFav($id)
     {
 
         $.ajax({
             method: 'GET',
-            url: 'ClassFur',
+            url: 'AddToFav',
             dataType: 'json',
-            data: {$id},
+            data: {
+                ID:$id
+            },
 
         }).done((json) =>{
-            var Classified = json.Classified;
-            console.log(Classified);
-            // for(i = 0 ;i<Classified.length;i++)
-            // {
-            //     console.log(Classified[i].ID)
-            //     // if (Classified[i].fru-id == $id) break;
-            // }
-            // console.log(Classified[i].cls-id);
-        }).fail((json)=>{console.log("fail");});
+            alert("Added to favorite");
+        }).fail((json)=>{alert("Already exisit");});
     }
 </script>
 @endsection

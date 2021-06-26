@@ -34,7 +34,6 @@ class Furniture extends Model
 
     public static function getDataByKind($kind)
     {
-
         return Furniture::whereHas('classified', function($classifiy) use ($kind)
         {
             $classifiy->where('cls-id',$kind);

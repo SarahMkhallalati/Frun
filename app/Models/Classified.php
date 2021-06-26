@@ -10,6 +10,8 @@ class Classified extends Model
     use HasFactory;
 
     protected $table = 'classified';
+    public $timestamps = false;
+    protected $fillable = ['ID','fru-id', 'cls-id'];
 
     public function furniture()
     {

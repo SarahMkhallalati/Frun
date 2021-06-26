@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/',[Controller::class,'frniture'])->name('Index');
-Route::get('ClassFur',[Controller::class,'GetClassified'])->name('ClassFur');
+Route::get('AddToFav',[Controller::class,'CreatFav'])->name('AddToFav');
 
 Route::get('/bedRoom',[Controller::class,'bedRooms'])->name('bed_rooms');
 
