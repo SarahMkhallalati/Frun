@@ -275,11 +275,11 @@
               <img src="http://localhost/furniture/public/${kind_data[i].image}" class="card-img-top" alt="...">
               <div class="card-body">
                 <h5 class="card-title">${kind_data[i].furn_name}</h5>
-                <p class="card-text">width: ${kind_data[i].width} height: ${kind_data[i].height}  depth: ${kind_data[i].depth}<br>
+                <p class="card-text">width: ${kind_data[i].width} height: ${kind_data[i].height}  depth: ${kind_data[i].length}<br>
                   price:${kind_data[i].price}
                 </p>
-                <button id="addToCartBT" class="btn btn-primary" type="button"
-                onclick="AddToCart(${kind_data[i].ID},${kind_data[i].width},${kind_data[i].depth});">
+                <button id="addToCartBT_${i}" class="btn btn-primary" type="button"
+                onclick="AddToCart(${kind_data[i].ID},${kind_data[i].width},${kind_data[i].length},${i});">
                   <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
                 </button>
               </div>
@@ -295,30 +295,28 @@
 
   }
 
-  function AddToCart($cardID,$width,$depth)
+  function AddToCart($cardID,$width,$depth,cartIndex)
   {
-    var itemSpace = $width*$depth;
 
-    for(i=0; i<CartIdArr.length;i++)
-    {
-        if(CartIdArr[i]==$cardID)
-        {
-            alert("Already Exist")
-            $("addToCartBT").attr("disabled", true);
-            return;
-        }
-
-        totalItemSpace = totalItemSpace + itemSpace;
-        console.log(totalItemSpace);
-        if(totalItemSpace> roomSpace*65/100)
-         {
-            alert("you can't add any more Items");
-            return;
-         }
+     if(CartIdArr.indexOf($cardID) !=-1)
+     {
+        alert("Already Exist")
+        return;
     }
-    CartIdArr.push($cardID);
 
+
+   if(totalItemSpace +  ($width * $depth)> roomSpace*65/100)
+    {
+        alert("you can't add any more Items");
+        return;
+    }
+    console.log(cartIndex)
+    totalItemSpace = totalItemSpace +  ($width * $depth);
+    console.log(totalItemSpace);
+    CartIdArr.push($cardID);
     console.log(CartIdArr);
+    document.getElementById("addToCartBT_"+cartIndex).disabled = true;
+
   }
 
   span.onclick = function()
