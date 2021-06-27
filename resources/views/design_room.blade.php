@@ -85,10 +85,10 @@
   <div style="display: inline; padding-top: 50px;">
     <select id="selectRoomKind" class="form-select" aria-label="Default select example" style="margin-left: 350px; width: 800; ">
       <option selected>Choose your room type</option>
-      <option value="1">Bed Room</option>
-      <option value="2">Living Room</option>
-      <option value="3">Dining Room</option>
-      <option value="3">Office Room</option>
+      <option id="1" value="1">Bed Room</option>
+      <option id="2" value="2">Living Room</option>
+      <option id="3" value="3">Dining Room</option>
+      <option id="4" value="4">Office Room</option>
     </select>
   </div>
   </div>
@@ -134,6 +134,7 @@
   let isDrawing = false;
   var areaWidth;
   var areaHeight;
+  var CartIdArr=[];
   var canvas = document.getElementById("canvas");
   var modal = document.getElementById("myModal");
   var span = document.getElementsByClassName("close")[0];
@@ -215,6 +216,7 @@
 
   DoneBT.onclick = function()
   {
+    var roomKind = document.getElementById(kind.value).innerHTML;
     console.log(kind.value)
     $.ajax({
         method: 'GET',
@@ -227,11 +229,33 @@
         console.log('success');
         console.log(json.kind_data);
 
+        var kind_fav = json.kind_fav;
         var kind_data = json.kind_data;
+
         var roomsRow = $('#roomCard');
 
         roomsRow.empty();
         roomsRow.append(`<h2 class="bestselling"> Your Favorite </h2>`);
+
+        for(i = 0 ;i<kind_fav.length;i++)
+        {
+            roomsRow.append(`<div class="col-lg-4">
+            <div class="card">
+              <img src="http://localhost/furniture/public/${kind_fav[i].image}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">${kind_fav[i].furn_name}</h5>
+                width:${kind_fav[i].width} height: ${kind_fav[i].height}  depth: ${kind_fav[i].depth}<br>
+                  price:${kind_fav[i].price}
+                </p>
+                <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${kind_fav[i].ID});" >
+                  <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
+                </button>
+              </div>
+            </div>
+          </div>`)
+        }
+
+        roomsRow.append(`<h2 class="bestselling"> ${roomKind} </h2>`);
 
         for(i = 0 ;i<kind_data.length;i++)
         {
@@ -240,11 +264,11 @@
               <img src="http://localhost/furniture/public/${kind_data[i].image}" class="card-img-top" alt="...">
               <div class="card-body">
                 <h5 class="card-title">${kind_data[i].furn_name}</h5>
-                <p class="card-text">width:120cm
-                  height:20cm <br>
+                <p class="card-text">width: ${kind_data[i].width} height: ${kind_data[i].height}  depth: ${kind_data[i].depth}<br>
                   price:${kind_data[i].price}
                 </p>
-                <button class="btn btn-primary" type="button" id="add_to_cart">
+                <button id="addToCartBT" class="btn btn-primary" type="button"
+                onclick="AddToCart(${kind_data[i].ID});">
                   <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
                 </button>
               </div>
@@ -256,6 +280,21 @@
     }).fail((json)=>{
         console.log('fail');
     });
+  }
+
+  function AddToCart($cardID,)
+  {
+    for(i=0; i<CartIdArr.length;i++)
+    {
+        if(CartIdArr[i]==$cardID)
+        {
+            alert("Already Exist")
+            $("addToCartBT").attr("disabled", true);
+            return;
+        }
+    }
+    CartIdArr.push($cardID);
+    console.log(CartIdArr);
   }
 
   span.onclick = function()

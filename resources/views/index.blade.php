@@ -23,8 +23,7 @@
               <img src="{{asset($furniture->image)}}" class="card-img-top" alt="...">
               <div class="card-body">
                 <h5 class="card-title">{{$furniture->furn_name}}</h5>
-                <p class="card-text">width:{{$furniture->width}}
-                    height:{{$furniture['height']}}  depth : {{$furniture->depth}} <br>
+                <p class="card-text">width: {{$furniture->width}} height: {{$furniture['height']}}  depth: {{$furniture->depth}} <br>
                   price:{{$furniture->price}}
                 </p>
                 <button id="AddToFavBT" class="btn btn-primary" type="button" onclick="AddToFav({{$furniture->ID}});" >
