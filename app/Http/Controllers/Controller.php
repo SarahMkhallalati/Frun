@@ -48,10 +48,11 @@ class Controller extends BaseController
         return view('design_room',['rooms' => $bedRooms]);
     }
 
+
     public function CreatFav(Request $request)
     {
         $classified = Classified::where("fru-id",$request->get("ID"))->first();
-        $customerFur = Classified::where("cust-id",1)->where("classified-id",$classified->ID)->first();
+        $customerFur = CustomerFurniture::where("cust-id",1)->where("classified-id",$classified->ID)->first();
         if(empty($customerFur))
         {CustomerFurniture::create([
             "cust-id" => 1,

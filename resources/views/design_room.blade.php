@@ -117,21 +117,23 @@
           <input type="numder" id="WDwidth" class="form-control" aria-label="Amount (to the nearest dollar)">
           <span class="input-group-text">meter</span>
         </div>
-        <button type="button" class="btn btn-success"  id="saveBT">Save</button>
+        <button type="button" class="btn btn-success"  id="saveBT" >Save</button>
       </div>
     </div>
-  <button type="button" class="btn btn-success"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none;"
+  <button type="button" class="btn btn-success"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none; "
    >Done</button>
+   <div id="next"> </div>
    <div class="card-group">
     <div class="row" id="roomCard" style="display: flex;"> </div>
    </div>
+   <a class="btn btn-primary" href="{{route('finalRoom')}}" role="button" id="nextBT" style="margin-left: 1150px; display: none;">Next</a>
   @include("footer");
 @endsection
 
 @section('scripts')
 <script type="text/javascript">
-  var xStart,xEnd,yStart,yEnd,c,ctx;
-  let isDrawing = false;
+  var xStart,xEnd,yStart,yEnd,c,ctx,dx,dy;
+  var isDrawing = false;
   var areaWidth;
   var areaHeight;
   var CartIdArr=[];
@@ -143,7 +145,9 @@
   var roomCard = document.getElementById("roomCard");
   var DoneBT = document.getElementById("Done");
   var addToCartBT = document.getElementById("add_to_cart");
-
+  var nextBT = document.getElementById("nextBT")
+  var roomSpace;
+  var totalItemSpace=0;
 
 
   function DRfunction()
@@ -152,13 +156,14 @@
       ctx=c.getContext("2d");
       areaWidth =  document.getElementById("areaRoomW").value;
       areaHeight =  document.getElementById("areaRoomH").value;
+      roomSpace= space(areaWidth*100,areaHeight*100);
       ctx.rect(500, 10, areaWidth*100, areaHeight*100);
       ctx.lineWidth = "10";
       ctx.strokeStyle = "black";
       ctx.stroke();
       document.getElementById("Done").style.display= "block";
-
-
+      localStorage.setItem('areaWidth',areaWidth);
+      localStorage.setItem('areaHeight',areaHeight);
 
 
     }
@@ -177,7 +182,7 @@
       if(p[3]==0)
       {isDrawing = false;}
       else {isDrawing=true;}
-      console.log(p);
+      console.log(isDrawing);
     });
 
   c.addEventListener('mouseup', e =>
@@ -185,19 +190,22 @@
       if(isDrawing==true)
       {
         modal.style.display = "block";
-        isDrawing = false;}
+        isDrawing = false;
+        }
+
     });
   c.addEventListener('mousemove', e =>
   {
     xEnd = e.offsetX;
     yEnd = e.offsetY;
-    var dx=xStart- xEnd+10; if(dx<0){dx=dx*-1;}
-    var dy=yStart- yEnd+10; if(dy<0){dy=dy*-1;}
+    dx=xStart- xEnd+10; if(dx<0){  dx=dx*-1;}
+    dy=yStart- yEnd+10; if(dy<0){  dy=dy*-1;}
     if(isDrawing === true)
     {
-     if(dx>=dy){drawLine(ctx, xStart, yStart, xEnd, yStart);}
+     if(dx>=dy){drawLine(ctx, xStart, yStart, xEnd, yStart); }
      else if(dx<dy){drawLine(ctx, xStart, yStart, xStart, yEnd);}
     }
+
   });
   }
 
@@ -206,18 +214,22 @@
     var WIcheck = document.getElementById("flexRadioDefault2").checked;
     var DOcheck = document.getElementById("flexRadioDefault1").checked;
     var WDwidth = document.getElementById("WDwidth").value;
-    // if(WDwidth.length==0 && WIcheck) {alert("enter the width of you window ");}
-    // if(WDwidth.length==0 && DOcheck) {alert("enter the width of you door ");}
-    // if(!WIcheck || !DOcheck) {alert("choose what you draw a line for ");}
+    var lineInfo = [WDwidth,xStart,yStart,xEnd,yEnd];
+
+
+    if(WIcheck){localStorage.setItem('window',lineInfo);}
+    else if(DOcheck){localStorage.setItem('door',lineInfo);}
     if(WIcheck || DOcheck && WDwidth.length!=0)
     {modal.style.display = "none";}
     if(kind==1){}
+    console.log(roomSpace*35/100);
+
   }
 
   DoneBT.onclick = function()
   {
     var roomKind = document.getElementById(kind.value).innerHTML;
-    console.log(kind.value)
+
     $.ajax({
         method: 'GET',
         url: 'get_kind',
@@ -226,8 +238,7 @@
             kind:kind.value,
         }
     }).done((json) => {
-        console.log('success');
-        console.log(json.kind_data);
+
 
         var kind_fav = json.kind_fav;
         var kind_data = json.kind_data;
@@ -247,7 +258,7 @@
                 width:${kind_fav[i].width} height: ${kind_fav[i].height}  depth: ${kind_fav[i].depth}<br>
                   price:${kind_fav[i].price}
                 </p>
-                <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${kind_fav[i].ID});" >
+                <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${kind_fav[i].ID},${kind_fav[i].width},${kind_fav[i].depth});" >
                   <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
                 </button>
               </div>
@@ -268,7 +279,7 @@
                   price:${kind_data[i].price}
                 </p>
                 <button id="addToCartBT" class="btn btn-primary" type="button"
-                onclick="AddToCart(${kind_data[i].ID});">
+                onclick="AddToCart(${kind_data[i].ID},${kind_data[i].width},${kind_data[i].depth});">
                   <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
                 </button>
               </div>
@@ -280,10 +291,14 @@
     }).fail((json)=>{
         console.log('fail');
     });
+    nextBT.style.display = "block";
+
   }
 
-  function AddToCart($cardID,)
+  function AddToCart($cardID,$width,$depth)
   {
+    var itemSpace = $width*$depth;
+
     for(i=0; i<CartIdArr.length;i++)
     {
         if(CartIdArr[i]==$cardID)
@@ -292,8 +307,17 @@
             $("addToCartBT").attr("disabled", true);
             return;
         }
+
+        totalItemSpace = totalItemSpace + itemSpace;
+        console.log(totalItemSpace);
+        if(totalItemSpace> roomSpace*65/100)
+         {
+            alert("you can't add any more Items");
+            return;
+         }
     }
     CartIdArr.push($cardID);
+
     console.log(CartIdArr);
   }
 
@@ -322,6 +346,12 @@
     return ((r << 16) | (g << 8) | b).toString(16);
   }
 
+  function space($x,$y)
+  {
+      space = $x*$y;
+      return (space);
+
+  }
 </script>
 
 @endsection
