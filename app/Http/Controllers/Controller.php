@@ -73,9 +73,9 @@ class Controller extends BaseController
         $classified = Classified::where("cls-id", $kind)->get();
         $kindVar = Furniture::whereIn("ID",$favorites->pluck("fru-id"))->get();
         $kindData = Furniture::whereIn("ID",$classified ->pluck("fru-id"))->get();
-        return Response()->json(['kind_fav' => $kindVar,'kind_data'=>$kindData],200);
+        $officeID = Classified::where("cls-id", 4)->get();
+        $officeData = Furniture::whereIn("ID",$officeID ->pluck("fru-id"))->get();
+        return Response()->json(['kind_fav' => $kindVar,'kind_data'=>$kindData,'office_data'=>$officeData],200);
     }
-
-
 
 }

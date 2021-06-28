@@ -121,12 +121,11 @@
         <button type="button" class="btn btn-success"  id="saveBT" >Save</button>
       </div>
     </div>
-  <button type="button" class="btn btn-success"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none; "
-   >Done</button>
-   <div id="next"> </div>
-   <div class="card-group">
+    <button type="button" class="btn btn-success"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none; "
+    >Done</button>
+    <div class="card-group">
     <div class="row" id="roomCard" style="display: flex;"> </div>
-   </div>
+ </div>
    <a class="btn btn-primary" href="{{route('finalRoom')}}" role="button" id="nextBT" style="margin-left: 1150px; display: none;">Next</a>
   @include("footer");
   </body>
@@ -182,7 +181,7 @@
     DRfunction();
 
 
-  c.addEventListener('mousedown', e =>
+    c.addEventListener('mousedown', e =>
     {
       xStart = e.offsetX;
       yStart = e.offsetY;
@@ -193,7 +192,7 @@
       console.log(isDrawing);
     });
 
-  c.addEventListener('mouseup', e =>
+    c.addEventListener('mouseup', e =>
     {
       if(isDrawing==true)
       {
@@ -202,19 +201,19 @@
         }
 
     });
-  c.addEventListener('mousemove', e =>
-  {
-    xEnd = e.offsetX;
-    yEnd = e.offsetY;
-    dx=xStart- xEnd+10; if(dx<0){  dx=dx*-1;}
-    dy=yStart- yEnd+10; if(dy<0){  dy=dy*-1;}
-    if(isDrawing === true)
+    c.addEventListener('mousemove', e =>
     {
-     if(dx>=dy){drawLine(ctx, xStart, yStart, xEnd, yStart); }
-     else if(dx<dy){drawLine(ctx, xStart, yStart, xStart, yEnd);}
-    }
+        xEnd = e.offsetX;
+        yEnd = e.offsetY;
+        dx=xStart- xEnd+10; if(dx<0){  dx=dx*-1;}
+        dy=yStart- yEnd+10; if(dy<0){  dy=dy*-1;}
+        if(isDrawing === true)
+        {
+         if(dx>=dy){drawLine(ctx, xStart, yStart, xEnd, yStart); }
+         else if(dx<dy){drawLine(ctx, xStart, yStart, xStart, yEnd);}
+        }
 
-  });
+    });
   }
 
   save.onclick = function()
@@ -229,8 +228,7 @@
     else if(DOcheck){localStorage.setItem('door',lineInfo);}
     if(WIcheck || DOcheck && WDwidth.length!=0)
     {modal.style.display = "none";}
-    if(kind==1){}
-    console.log(roomSpace*35/100);
+
 
   }
 
@@ -250,6 +248,8 @@
 
         var kind_fav = json.kind_fav;
         var kind_data = json.kind_data;
+        var office_card = json.office_data;
+        console.log(office_card);
 
         var roomsRow = $('#roomCard');
 
@@ -271,7 +271,7 @@
                 </button>
               </div>
             </div>
-          </div>`)
+          </div>`);
         }
 
         roomsRow.append(`<h2 class="bestselling"> ${roomKind} </h2>`);
@@ -292,9 +292,29 @@
                 </button>
               </div>
             </div>
-          </div>`)
+          </div>`);
         }
-
+        if(kind.value==1)
+        {
+            roomsRow.append(`<h2 class="bestselling"> Office </h2>`);
+            for(i = 0 ;i<office_card.length;i++)
+            {
+                roomsRow.append(`<div class="col-lg-4">
+                <div class="card">
+                  <img src="http://localhost/furniture/public/${office_card[i].image}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">${office_card[i].furn_name}</h5>
+                    width:${office_card[i].width} height: ${office_card[i].height}  depth: ${office_card[i].depth}<br>
+                      price:${office_card[i].price}
+                    </p>
+                    <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${office_card[i].ID},${office_card[i].width},${office_card[i].depth});" >
+                      <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
+                    </button>
+                  </div>
+                </div>
+                </div>`);
+            }
+        }
 
     }).fail((json)=>{
         console.log('fail');
@@ -320,7 +340,7 @@
         totalItemSpace = totalItemSpace + itemSpace;
         console.log(totalItemSpace);
         if(totalItemSpace> roomSpace*65/100)
-         {
+        {
             alert("you can't add any more Items");
             return;
          }
@@ -330,6 +350,11 @@
     console.log(CartIdArr);
   }
 
+  nextBT.onclick = function()
+  {
+      localStorage.setItem('InCartArr',CartIdArr);
+      localStorage.setItem('roomKind',kind.value);
+  }
   span.onclick = function()
   {
     modal.style.display = "none";

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 		<title>East SR</title>
-		<link rel="shortcut icon" type="image/x-icon" href="{{asset('public/images/logo.jpg')}}"/>
+		<link rel="shortcut icon" type="image/x-icon" href="furniture/public/images/logo.png"/>
 		<link href="{{asset('fontawesome-free-5.12.0-web/css/all.min.css')}}" rel="stylesheet"/>
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Dancing Script"/>
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Cabin"/>
