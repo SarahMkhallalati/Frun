@@ -71,6 +71,7 @@
 
 
   @section('body')
+  <body onload="deletLocalSorage();">
   @include('navBar')
 
   <h1 style="text-align: center; padding-top: 50px;">Enter You Room Prorerties</h1>
@@ -128,6 +129,7 @@
    </div>
    <a class="btn btn-primary" href="{{route('finalRoom')}}" role="button" id="nextBT" style="margin-left: 1150px; display: none;">Next</a>
   @include("footer");
+  </body>
 @endsection
 
 @section('scripts')
@@ -149,6 +151,12 @@
   var roomSpace;
   var totalItemSpace=0;
 
+
+  function deletLocalSorage()
+  {
+    localStorage.clear();
+    console.log(localStorage);
+  }
 
   function DRfunction()
     {
@@ -292,6 +300,7 @@
         console.log('fail');
     });
     nextBT.style.display = "block";
+    console.log(localStorage);
 
   }
 
