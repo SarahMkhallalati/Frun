@@ -93,7 +93,7 @@
     </select>
   </div>
   </div>
-  <button class="btn btn-outline-secondary" type="button" id="button-addon2" style="margin-left: 1150px; margin-top:10px;"
+  <button class="btn btn-outline-primary" type="button" id="button-addon2" style="margin-left: 1150px; margin-top:10px;"
    onclick="canvasDIV();">OK
   </button>
   <div id=canvas>
@@ -118,10 +118,10 @@
           <input type="numder" id="WDwidth" class="form-control" aria-label="Amount (to the nearest dollar)">
           <span class="input-group-text">meter</span>
         </div>
-        <button type="button" class="btn btn-success"  id="saveBT" >Save</button>
+        <button type="button" class="btn btn-primary"  id="saveBT" >Save</button>
       </div>
     </div>
-    <button type="button" class="btn btn-success"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none; "
+    <button type="button" class="btn btn-primary"  id="Done" style="margin-left: 1150px; margin-top: 60px; display: none; "
     >Done</button>
     <div class="card-group">
     <div class="row" id="roomCard" style="display: flex;"> </div>
@@ -132,23 +132,24 @@
 @endsection
 
 @section('scripts')
+<script src="{{asset ('/js/app.js')}}"></script>
 <script type="text/javascript">
-  var xStart,xEnd,yStart,yEnd,c,ctx,dx,dy;
-  var isDrawing = false;
-  var areaWidth;
-  var areaHeight;
-  var CartIdArr=[];
-  var canvas = document.getElementById("canvas");
-  var modal = document.getElementById("myModal");
-  var span = document.getElementsByClassName("close")[0];
-  var save = document.getElementById("saveBT");
-  var kind =  document.getElementById("selectRoomKind");
-  var roomCard = document.getElementById("roomCard");
-  var DoneBT = document.getElementById("Done");
-  var addToCartBT = document.getElementById("add_to_cart");
-  var nextBT = document.getElementById("nextBT")
-  var roomSpace;
-  var totalItemSpace=0;
+    var xStart,xEnd,yStart,yEnd,c,ctx,dx,dy;
+    var isDrawing = false;
+    var areaWidth;
+    var areaHeight;
+    var selectedIDs=[];
+    var canvas = document.getElementById("canvas");
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    var save = document.getElementById("saveBT");
+    var kind =  document.getElementById("selectRoomKind");
+    var roomCard = document.getElementById("roomCard");
+    var DoneBT = document.getElementById("Done");
+    var addToCartBT = document.getElementById("add_to_cart");
+    var nextBT = document.getElementById("nextBT")
+    var roomSpace;
+    var totalItemSpace=0;
 
 
   function deletLocalSorage()
@@ -267,7 +268,7 @@
                   price:${kind_fav[i].price}
                 </p>
                 <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${kind_fav[i].ID},${kind_fav[i].width},${kind_fav[i].depth});" >
-                  <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
+                  <strong class="btn-text">Add to Room </strong>
                 </button>
               </div>
             </div>
@@ -288,7 +289,7 @@
                 </p>
                 <button id="addToCartBT" class="btn btn-primary" type="button"
                 onclick="AddToCart(${kind_data[i].ID},${kind_data[i].width},${kind_data[i].depth});">
-                  <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
+                  <strong class="btn-text">Add to Room </strong>
                 </button>
               </div>
             </div>
@@ -308,7 +309,7 @@
                       price:${office_card[i].price}
                     </p>
                     <button id="addToCartBT" class="btn btn-primary" type="button" onclick="AddToCart(${office_card[i].ID},${office_card[i].width},${office_card[i].depth});" >
-                      <strong class="btn-text">Add to cart <i class="fas fa-cart-plus"></i></i></strong>
+                      <strong class="btn-text">Add to Room </strong>
                     </button>
                   </div>
                 </div>
@@ -328,9 +329,9 @@
   {
     var itemSpace = $width*$depth;
 
-    for(i=0; i<CartIdArr.length;i++)
+    for(i=0; i<selectedIDs.length;i++)
     {
-        if(CartIdArr[i]==$cardID)
+        if(selectedIDs[i]==$cardID)
         {
             alert("Already Exist")
             $("addToCartBT").attr("disabled", true);
@@ -343,16 +344,16 @@
         {
             alert("you can't add any more Items");
             return;
-         }
+        }
     }
-    CartIdArr.push($cardID);
+    selectedIDs.push($cardID);
 
-    console.log(CartIdArr);
+    console.log(selectedIDs);
   }
 
   nextBT.onclick = function()
   {
-      localStorage.setItem('InCartArr',CartIdArr);
+      localStorage.setItem('selectedItems',selectedIDs);
       localStorage.setItem('roomKind',kind.value);
   }
   span.onclick = function()

@@ -78,4 +78,19 @@ class Controller extends BaseController
         return Response()->json(['kind_fav' => $kindVar,'kind_data'=>$kindData,'office_data'=>$officeData],200);
     }
 
+    public function getByID(Request $request)
+    {
+        $IDs = $request->get('IDs');
+        $selectedItems = Furniture::getDataByID($IDs);
+        return Response()->json(['selecetdItems' => $selectedItems],200);
+    }
+
+
+    public function getchep (Request $request)
+    {
+        $cheps = Furniture::where("price", '<=' , 200) ->get();
+        return view('Cheapest',['cheps' => $cheps]);
+
+    }
+
 }

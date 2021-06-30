@@ -30,23 +30,23 @@
             <a class="nav-link" href="#">Sales</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Bestselling</a>
+            <a class="nav-link" href="{{route('chepest')}}">Cheapest</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{route('about_us')}}">ِAbout</a>
+            <a class="nav-link" href="{{route('about')}}">ِAbout</a>
           </li>
         </ul>
       </div>
       <div class="container-fluid" style="margen-left:500";>
-        <form class="d-flex">
-          <input class="form-control me-2" style="display: inline-block; width: 250px; padding-left: 450;" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" style="background-color: white;" type="submit">Search</button>
+        <form action="" method="GET" class="d-flex" style="padding-left:500px;">
+          <input class="form-control me-2" style="display: inline-block; width: 250px; padding-left: 450;" id="txtsearch" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-white" style="background-color: #1976D2; color:white;" type="submit">Search</button>
         </form>
       </div>
       <div style="display: flex; padding-left:15">
-        <a href="{{route('account')}}" style=" color: blue; "><i class="fas fa-user"></i></a>
-        <a href="fav.html"style=" color: blue; padding-left:5"><i class="far fa-heart"></i></i></a>
-        <a href="card.html"style="; color: blue; padding-left:5"><i class="fas fa-cart-plus"></i></i></a>
+        <a href="{{route('account')}}" style=" color: #1976D2; "><i class="fas fa-user"></i></a>
+        <a href="fav.html"style=" color: #1976D2; margin-left:7px;"><i class="far fa-heart"></i></i></a>
+        <a href="card.html"style="; color: #1976D2; margin-left:5px;"><i class="fas fa-cart-plus"></i></i></a>
       </div>
     </div>
   </nav>

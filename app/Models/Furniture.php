@@ -39,4 +39,12 @@ class Furniture extends Model
             $classifiy->where('cls-id',$kind);
         })->get();
     }
+
+    public static function getDataByID($IDs)
+    {
+
+        return Furniture::whereIn('ID', $IDs)->get();
+    }
+
+    
 }

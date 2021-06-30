@@ -21,16 +21,25 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/',[Controller::class,'frniture'])->name('Index');
+
 Route::get('AddToFav',[Controller::class,'CreatFav'])->name('AddToFav');
 
 Route::get('/bedRoom',[Controller::class,'bedRooms'])->name('bed_rooms');
 
 Route::get('/livingRoom',[Controller::class,'livingRoom'])->name('living_room');
 
+Route::view('about', 'about')->name('about');
 
-Route::view('about_us', 'about')->name('about_us');
 Route::view('account', 'account')->name('account');
+
 Route::view('finalRoom', 'finalRoom')->name('finalRoom');
+
 Route::get('design_room',[Controller::class,'designRoom'])->name('design_room');
 
 Route::get('get_kind',[Controller::class,'getKind'])->name('get_kind');
+
+Route::get('get_item_byID',[Controller::class,'getByID'])->name('get_item_byID');
+
+
+
+Route::get('chepest',[Controller::class,'getchep'])->name('chepest');

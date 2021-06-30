@@ -32,7 +32,7 @@
             </div>
             <div style="width: 25%;">
 	    	    <p id="in-footer">Get In Touch</p>
-	    	    <pre><i class="fab fa-facebook-f"></i> </pre>
+	    	    <pre><i class="fab fa-facebook-f"></i> <i class="fab fa-instagram"></i> <i class="fab fa-telegram"></i>
             </div>
         </div>
 
