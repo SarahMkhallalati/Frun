@@ -38,6 +38,7 @@ var DoorIndex = localStorage.getItem('DoorIndex')
 
 
 
+var $ = require('jquery');
 function ItemPosetion($IndexStart,$IndexEnd)
 {
     if(0<$IndexStart<rightIndex  && 0<$IndexEnd<rightIndex) return 0;
@@ -58,23 +59,26 @@ function setPopulation()
 {
     return parseInt(item, 10);
     });
+    console.log(selectedIDs)
+
 
     $.ajax({
     method: 'GET',
     url: 'get_item_byID',
     dataType: 'json',
     data: {
-        IDs:selectedID
+        IDs:0
     }
     }).done((json) => {
         var Items=json.selecetdItems;
+         var ItemsHere = Array();
         for(var i=0;i<50;i++)
         {
             var $Offset = Math.random()*100;
-            var ItemsHere
+
             for(var i=0; i<Items.length; i++)
             {
-                var ItemInfo = [ Items[i].furn_name, 0+$Offset, Items[i].width+$Offset, ItemPosetion($(0+$Offset,Items[i]),$(Items[i].width+$Offset))];
+                var ItemInfo = JSON.stringify([ Items[i].furn_name, 0+$Offset, Items[i].width+$Offset, ItemPosetion(0+$Offset,Items[i],Items[i].width+$Offset)]);
                 ItemsHere.push(ItemInfo);
             }
 
@@ -182,7 +186,7 @@ function mutationFunction(phenotype)
 
 function crossoverFunction(phenotypeA, phenotypeB)
 {
-    var swapItemIndex = getRandomInt(phenotype.length)
+    var swapItemIndex = getRandomInt(geneticalgorithm.population().length)
     var fromA = phenotypeA[swapItemIndex]
     var fromB = phenotypeB[swapItemIndex]
 
@@ -192,14 +196,14 @@ function crossoverFunction(phenotypeA, phenotypeB)
     return [phenotypeA, phenotypeB]
 
 }
+population = [{name : "black Closet" , start:614,end:674,wall:0},{name : "bambo Closet" , start:614,end:734,wall:0}];
 
-var config = {
-    mutationFunction: mutationFunction(phenotype),
-    crossoverFunction: crossoverFunction(a,b),
-    fitnessFunction: fitnessFunction(phenotype),
-    population: setPopulation(),
-    populationSize: 50
-    };
 
     window.genertic = require('geneticalgorithm')
-    window.geneticalgorithm = window.genertic( config )
+    window.geneticalgorithm = window.genertic( {
+        mutationFunction: mutationFunction,
+        crossoverFunction: crossoverFunction,
+        fitnessFunction: fitnessFunction,
+        population: population,
+        populationSize: 2
+        } );

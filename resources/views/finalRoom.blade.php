@@ -224,6 +224,9 @@
         var populatio = setPopulation()
         console.log(populatio)
 
+        console.log(geneticalgorithm.population());
+        console.log(geneticalgorithm.evolve().evolve().best());
+
         // console.log(rightIndex,bottomIndex ,leftIndex)
         // console.log(doosStartIn, doorEndIn )
         // console.log(windowStartIn, windowEndIn)
