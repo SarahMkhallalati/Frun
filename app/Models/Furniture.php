@@ -43,7 +43,7 @@ class Furniture extends Model
     public static function getDataByID($IDs)
     {
 
-        return Furniture::limit(5)->get();
+        return Furniture::whereIn('ID',$IDs)->get();
     }
 
 
