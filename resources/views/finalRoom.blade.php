@@ -290,6 +290,35 @@
     });
  }
 
+ function setPopulation()
+{
+    var selectedIDs = localStorage.getItem('selectedItems');
+    var selectedID = selectedIDs.split(',').map(function(item)
+    {
+    return parseInt(item, 10);
+    });
+
+    $.ajax({
+    method: 'GET',
+    url: 'get_item_byID',
+    dataType: 'json',
+    data: {
+        IDs:selectedID,
+
+    }
+    }).done((json) => {
+        var Items=json.selecetdItems;
+
+            var $Offset = Math.random()*100;
+
+            for(var i=0; i<Items.length; i++)
+                population.push({name :Items[i].furn_name,start: 0+$Offset,end: Items[i].width+$Offset,wall: ItemPosetion(0+$Offset,Items[i].width+$Offset)});
+    }).fail((json)=>{
+    console.log('fail');
+    });
+    return population;
+}
+
  function ItemPosetion($IndexStart,$IndexEnd)
 {
     if(0<$IndexStart<rightIndex  && 0<$IndexEnd<rightIndex) return 0;
@@ -297,6 +326,17 @@
     if(bottomIndex<$IndexStart<leftIndex  && bottomIndex<$IndexEnd<leftIndex) return 1;
     if(leftIndex<$IndexStart<perimeter  && leftIndex<$IndexEnd<perimeter) return 2;
     return null;
+}
+
+function getItems()
+{
+    var anotherWithLargePopulation = geneticalgorithm.clone({
+    population : setPopulation()
+
+})
+    console.log(anotherWithLargePopulation);
+    console.log(anotherWithLargePopulation.population());
+        console.log(anotherWithLargePopulation.evolve().evolve().best());
 }
 
 
