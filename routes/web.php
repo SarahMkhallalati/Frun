@@ -40,6 +40,10 @@ Route::get('get_kind',[Controller::class,'getKind'])->name('get_kind');
 
 Route::get('get_item_byID',[Controller::class,'getByID'])->name('get_item_byID');
 
+Route::view('account', 'account')->name('account');
 
+Route::view('login', 'login')->name('login');
+
+Route::get('/officRoom',[Controller::class,'officRoom'])->name('officRoom');
 
 Route::get('chepest',[Controller::class,'getchep'])->name('chepest');

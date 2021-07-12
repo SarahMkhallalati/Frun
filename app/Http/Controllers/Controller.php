@@ -92,5 +92,11 @@ class Controller extends BaseController
         return view('Cheapest',['cheps' => $cheps]);
 
     }
+    public function officRoom(Request $request)
+    {
+        $officRooms = Furniture::getofficRoom();
+
+        return view('rooms',['rooms' => $officRooms , 'roomName' => 'offic Room']);
+    }
 
 }

@@ -1873,7 +1873,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: true
 // });
 
-var population = [];
+var population = Array();
 var rightIndex = localStorage.getItem('rightIndex');
 var bottomIndex = localStorage.getItem('bottomIndex');
 var leftIndex = localStorage.getItem('leftIndex');
@@ -1902,33 +1902,29 @@ function setPopulation() {
   var selectedID = selectedIDs.split(',').map(function (item) {
     return parseInt(item, 10);
   });
-  console.log(selectedIDs);
   $.ajax({
     method: 'GET',
     url: 'get_item_byID',
     dataType: 'json',
     data: {
-      IDs: 0
+      IDs: selectedID
     }
   }).done(function (json) {
     var Items = json.selecetdItems;
-    var ItemsHere = Array();
+    var $Offset = Math.random() * 100;
 
-    for (var i = 0; i < 50; i++) {
-      var $Offset = Math.random() * 100;
-
-      for (var i = 0; i < Items.length; i++) {
-        var ItemInfo = JSON.stringify([Items[i].furn_name, 0 + $Offset, Items[i].width + $Offset, ItemPosetion(0 + $Offset, Items[i], Items[i].width + $Offset)]);
-        ItemsHere.push(ItemInfo);
-      }
-
-      population.push(ItemsHere);
+    for (var i = 0; i < Items.length; i++) {
+      population.push({
+        name: Items[i].furn_name,
+        start: 0 + $Offset,
+        end: Items[i].width + $Offset,
+        wall: ItemPosetion(0 + $Offset, Items[i].width + $Offset)
+      });
     }
-
-    return population;
   }).fail(function (json) {
     console.log('fail');
   });
+  return population;
 }
 
 function fitnessFunction(phenotype) {
@@ -2043,7 +2039,7 @@ window.geneticalgorithm = window.genertic({
   mutationFunction: mutationFunction,
   crossoverFunction: crossoverFunction,
   fitnessFunction: fitnessFunction,
-  population: population,
+  population: setPopulation(),
   populationSize: 2
 });
 

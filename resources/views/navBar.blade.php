@@ -20,7 +20,7 @@
               <li><a class="dropdown-item" href="{{route('bed_rooms')}}">Bed Room</a></li>
               <li><a class="dropdown-item" href="{{route('living_room')}}">Living Room</a></li>
               <li><a class="dropdown-item" href="dining_room.php">Dining Room</a></li>
-              <li><a class="dropdown-item" href="office_room.php">Office Room</a></li>
+              <li><a class="dropdown-item" href="{{route('officRoom')}}">Office Room</a></li>
             </ul>
           </li>
           <li class="nav-item" style="width: 125;">

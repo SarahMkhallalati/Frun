@@ -48,7 +48,7 @@ function ItemPosetion($IndexStart,$IndexEnd)
     return null;
 }
 
-function getRandomInt(max) {
+function getRandomInt(max){
     return Math.floor(Math.random() * max);
 }
 
@@ -56,9 +56,7 @@ function setPopulation()
 {
     var selectedIDs = localStorage.getItem('selectedItems');
     var selectedID = selectedIDs.split(',').map(function(item)
-{
-    return parseInt(item, 10);
-    });
+    { return parseInt(item, 10); });
 
     $.ajax({
     method: 'GET',
@@ -66,134 +64,174 @@ function setPopulation()
     dataType: 'json',
     data: {
         IDs:selectedID,
-
     }
     }).done((json) => {
         var Items=json.selecetdItems;
-
-            var $Offset = Math.random()*100;
-
-            for(var i=0; i<Items.length; i++)
-                population.push({name :Items[i].furn_name,start: 0+$Offset,end: Items[i].width+$Offset,wall: ItemPosetion(0+$Offset,Items[i].width+$Offset)});
+            var $Offset = getRandomInt(perimeter);
+            var FirstItem = []
+            var SecondItem = []
+            FirstItem.push(Items[0].ID, $Offset, $Offset+Items[0].width)
+            SecondItem.push(Items[0].ID, $Offset, $Offset+Items[0].width)
+            return {first: FirstItem, second: SecondItem}
+                // population.push({name :Items[i].furn_name,start: 0+$Offset,end: Items[i].width+$Offset,wall: ItemPosetion(0+$Offset,Items[i].width+$Offset)});
     }).fail((json)=>{
     console.log('fail');
     });
-    return population;
+
 }
 
 function fitnessFunction(phenotype)
 {
-    var score=0
+        var score=0
+        var first = phenotype.first
+        var sec= phenotype.second
 
-    for(var i=0;i<phenotype.length;i++)
-    {
-        var thisItem = phenotype[i]
-        var ItemName = thisItem[0].split('').map(function(item)
-        {
-            return parseInt(item, 10);
-        });
+        var firstItemName = first[0].split(' ')
 
-        //If this item is a bed then it should be on the wall next to the windows wall
-        if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
+        var sceondItemName = sec[0].split(' ')
+        var firstItemPosetion= ItemPosetion(first[1],first[1])
+        var secItemPosetion= ItemPosetion(sec[1],sec[1])
+
+        //If the first item is a bed then it should be on the wall next to the windows wall
+        if(firstItemName[0]=="Bed" || firstItemName[1]=="Bed")
         {
             if(windowPosition==0)
             {
-                if(thisItem[3]==2 || thisItem[3]==3){score=score+1}
+                if(firstItemPosetion==2 || firstItemPosetion==3){score=score+1}
             }
             if(windowPosition==3)
             {
-                if(thisIteme[3]==0 || thisItem[3]==1){score=score+1}
+                if(firstItemPosetion==0 || firstItemPosetion==1){score=score+1}
             }
             if(windowPosition==1)
             {
-                if(thisItem[3]==3 || thisItem[3]==2){score=score+1}
+                if(firstItemPosetion==3 || firstItemPosetion==2){score=score+1}
             }
             if(windowPosition==2)
             {
-                if(thisItem[3]==0 || thisItem[3]==1){score=score+1}
+                if(firstItemPosetion==0 || firstItemPosetion==1){score=score+1}
             }
+
+
+        }
+         //It the first is a closet then it should be on the same wall with the door
+        if(firstItemName[0]=="Closet" || firstItemName[1]=="Closet")
+        {
+            if(doorPosition==firstItemPosetion)
+            {score = score+1 }
         }
 
 
-        //It the item is a closet then it should be on the same wall with the door
-        if(thisItem[0]=="Closet" || thisItem[1]=="Closet")
+        //It the second is a closet then it should be on the same wall with the door
+        if(sceondItemName[0]=="Closet" || sceondItemName[1]=="Closet")
         {
-            if(doorPosition==thisItem[3])
+            if(doorPosition==ItemPosetion)
+            {score = score+1}
+        }
+        //If this second is a bed then it should be on the wall next to the windows wall
+        if(sceondItemName[0]=="Bed" || sceondItemName[1]=="Bed")
+        {
+            if(windowPosition==0)
             {
-                if(thisItem[1]<DoorIndex[0] && thisItem[1]<DoorIndex[1])
-                {
-                    if(thisItem[1]>DoorIndex[0] && thisItem[1]>DoorIndex[1])
-                    {score = score+1}
-                }
+                if(secItemPosetion==2 || secItemPosetion==3){score=score+1}
             }
+            if(windowPosition==3)
+            {
+                if(secItemPosetion==0 || secItemPosetion==1){score=score+1}
+            }
+            if(windowPosition==1)
+            {
+                if(secItemPosetion==3 || secItemPosetion==2){score=score+1}
+            }
+            if(windowPosition==2)
+            {
+                if(secItemPosetion==0 || secItemPosetion==1){score=score+1}
+            }
+
         }
 
 
-        //If this Item don't block the door
-        if(thisItem[1]<DoorIndex[0] && thisItem[1]<DoorIndex[1])
-        {
-            if(thisItem[1]>DoorIndex[0] && thisItem[1]>DoorIndex[1])
-            {score = score+1}
-        }
+        //If first Item don't block the door
+        if(first[1]<DoorIndex[0] && first[1]<DoorIndex[1])
+        {score = score+1}
+        if(first[1]>DoorIndex[0] && first[1]>DoorIndex[1])
+        {score = score+1}
 
-        //If this Item don't block the window
-        if(thisItem[1]<WindowIndex[0] && thisItem[1]<WindowIndex[1])
-        {
-            if(thisItem[1]>WindowIndex[0] && thisItem[1]>WindowIndex[1])
-            {score = score+1}
-        }
+        //If second Item don't block the door
+        if(sec[1]<DoorIndex[0] && sec[1]<DoorIndex[1])
+        {score = score+1}
+        if(sec[1]>DoorIndex[0] && sec[1]>DoorIndex[1])
+        {score = score+1}
+
+
+        //If the first Item don't block the window
+        if(first[1]<WindowIndex[0] && first[1]<WindowIndex[1])
+        {score = score+1}
+        if(first[1]>WindowIndex[0] && first[1]>WindowIndex[1])
+        {score = score+1}
+
+        //If the second Item don't block the window
+        if(sec[1]<WindowIndex[0] && sec[1]<WindowIndex[1])
+        {score = score+1}
+        if(sec[1]>WindowIndex[0] && sec[1]>WindowIndex[1])
+        {score = score+1}
 
 
         //If this Item don't block other item
-        for(var j=1;j<phenotype.length;j++)
-        {
-            var OtherItem = phenotype[j];
-            if(thisItem[1]<OtherItem[1] && thisItem[1]<OtherItem[2])
-            {
-                if(thisItem[1]>OtherItem[1] && thisItem[1]>OtherItem[2])
-                {score = score+1}
-                else break
-            }
-            else break
-        }
-    }
+        if(first[1]<sec[1] && first[2]<sec[1])
+        {score = score+1}
+        if(first[1]>sec[1] && first[1]>sec[2])
+        {score = score+1}
+
+
+
     return score
 }
 
 function mutationFunction(phenotype)
 {
-    for( var i=0; i<phenotype.length; i++)
-    {
-        var thisItem = population[i]
-        var offset = Math.random()*100
-        thisItem[1] = phenotype[1]+offset
-        thisItem[2]= phenotype[2]+offset
-        thisItem[3]=ItemPosetion(phenotype[1],phenotype[2])
-    }
 
-    return phenotype
+        var first = phenotype.first
+        var sec = phenotype.second
+
+        var offset1 = getRandomInt(perimeter)
+        first[1] = first[1]+offset1
+        first[2]= first[2]+offset1
+
+        var offset2 = getRandomInt(perimeter)
+        sec[1] = sec[1]+offset2
+        sec[2]= sec[2]+offset2
+        return phenotype
 }
 
 function crossoverFunction(phenotypeA, phenotypeB)
 {
-    var swapItemIndex = getRandomInt(geneticalgorithm.population().length)
-    var fromA = phenotypeA[swapItemIndex]
-    var fromB = phenotypeB[swapItemIndex]
+    var swapItemIndex = Math.random()
 
-    phenotypeA[swapItemIndex]= fromB
-    phenotypeB[swapItemIndex] = fromA
+
+    if(swapItemIndex<=0.5)
+    {var fromA = phenotypeA.first
+    var fromB = phenotypeB.first
+    phenotypeA.first= fromB
+    phenotypeB.first = fromA}
+
+    if(swapItemIndex>0.5)
+    {var fromA = phenotypeA.second
+    var fromB = phenotypeB.second
+    phenotypeA.second= fromB
+    phenotypeB.second = fromA}
 
     return [phenotypeA, phenotypeB]
 
 }
-population = [{name : "black Closet" , start:614,end:674,wall:0},{name : "bambo Closet" , start:614,end:734,wall:0}];
+
 
 
     window.genertic = require('geneticalgorithm')
-    window.geneticalgorithm = window.genertic( {
+    window.geneticalgorithm= window.genertic( {
         mutationFunction: mutationFunction,
         crossoverFunction: crossoverFunction,
         fitnessFunction: fitnessFunction,
-        population: setPopulation(),
-        populationSize: 2
+        population: [setPopulation()],
+        populationSize: 30
         } );

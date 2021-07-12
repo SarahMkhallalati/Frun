@@ -28,6 +28,7 @@
 @section('scripts')
 <script src="{{asset ('/js/app.js')}}"></script>
 <script type="text/javascript">
+
     var areaWidth = localStorage.getItem('areaWidth')*100;
     var areaHeight = localStorage.getItem('areaHeight')*100;
     var Door = localStorage.getItem('door');
@@ -42,23 +43,14 @@
     var windowStartIn, windowEndIn;
     var doosStartIn, doorEndIn;
     var roomArray=[];
+    var perimeter
     var c,ctx;
+    var DoorIndex,WindowIndex
+    var FirstItem = []
+    var SecondItem = []
+    var population
 
 
-
-    var population =[];
-
-
-    function ItemsPresentation(selectedIDs,$Offset)
-        {
-
-                for(var i=0; i<Items.length; i++)
-                {
-                    var ItemIndexRow = ["Item Id", Items[i].ID, "ItemSatartIndex",0+$Offset,"ItemEndIndex",Items[i].width+$Offset];
-                    ItemIdnex.push(ItemIndexRow);
-                }
-                return ItemIdnex
-        }
     function DRfunction()
     {
         theRoom.innerHTML= '<canvas id="myCanvas" width="1520" height="'+(areaHeight+50)+'" ></canvas>';
@@ -70,7 +62,6 @@
         bottomWall = [500, 10+(areaHeight),500+(areaWidth),10+(areaHeight)];
         leftWall = [500,10,500, 10+(areaHeight)];
         rightWall = [500+(areaWidth),10,500+(areaWidth),10+(areaHeight)];
-
 
         ctx.lineWidth = "10";
         ctx.strokeStyle = "black";
@@ -106,7 +97,6 @@
 
         }
 
-
         if(Window!=null)
         {
             var window = Window.split(',').map(function(item) {
@@ -138,7 +128,7 @@
         }
 
 
-        var perimeter = areaHeight*2 + areaWidth*2;
+        perimeter = areaHeight*2 + areaWidth*2;
         localStorage.setItem('perimeter',perimeter)
         for(var i=0 ; i<perimeter ; i++)
         {
@@ -174,8 +164,9 @@
             doorEndIn = doosStartIn+door[0];
         }
 
-        var DoorIndex =[doosStartIn,doorEndIn]
+        DoorIndex =[doosStartIn,doorEndIn]
         localStorage.setItem('DoorIndex',DoorIndex)
+
 
         if(windowPosition==0)
         {
@@ -197,7 +188,7 @@
             windowStartIn = rightIndex+WindowDistance;
             windowEndIn = windowStartIn+window[0];
         }
-        var WindowIndex =[windowStartIn,windowEndIn]
+        WindowIndex =[windowStartIn,windowEndIn]
         localStorage.setItem('WindowIndex',WindowIndex)
 
 
@@ -215,30 +206,10 @@
         }
         }).done((json) => {
             var Items=json.selecetdItems;
-            console.log(Items)
 
         }).fail((json)=>{
             console.log('fail');
         });
-
-        var populatio = setPopulation()
-        console.log(populatio)
-
-        console.log(geneticalgorithm.population());
-        console.log(geneticalgorithm.evolve().evolve().best());
-
-        // console.log(rightIndex,bottomIndex ,leftIndex)
-        // console.log(doosStartIn, doorEndIn )
-        // console.log(windowStartIn, windowEndIn)
-
-        // geneticalgorithm.evolve()
-        // var final= geneticalgorithm.best()
-
-        // // console.log(final)
-
-        // var phenotypeList = geneticalgorithm.population()
-
-        // console.log(phenotypeList)
 
     }
 
@@ -254,72 +225,7 @@
         ctx.lineCap = 'round';
     }
 
-    function setPopulation()
- {
-    var selectedIDs = localStorage.getItem('selectedItems');
-    var selectedID = selectedIDs.split(',').map(function(item)
-     {
-    return parseInt(item, 10);
-    });
-
-    $.ajax({
-    method: 'GET',
-    url: 'get_item_byID',
-    dataType: 'json',
-    data: {
-        IDs:selectedID
-    }
-    }).done((json) => {
-        var Items=json.selecetdItems;
-        for(var i=0;i<5;i++)
-        {
-            var $Offset = Math.random()*100;
-            var ItemsHere=[]
-            for(var i=0; i<Items.length; i++)
-            {
-                var ItemInfo = [ Items[i].furn_name, 0+$Offset, Items[i].width+$Offset, ItemPosetion($(0+$Offset,Items[i]),$(Items[i].width+$Offset))];
-                ItemsHere.push(ItemInfo);
-            }
-
-            population.push(ItemsHere);
-        }
-
-        return population;
-    }).fail((json)=>{
-    console.log('fail');
-    });
- }
-
- function setPopulation()
-{
-    var selectedIDs = localStorage.getItem('selectedItems');
-    var selectedID = selectedIDs.split(',').map(function(item)
-    {
-    return parseInt(item, 10);
-    });
-
-    $.ajax({
-    method: 'GET',
-    url: 'get_item_byID',
-    dataType: 'json',
-    data: {
-        IDs:selectedID,
-
-    }
-    }).done((json) => {
-        var Items=json.selecetdItems;
-
-            var $Offset = Math.random()*100;
-
-            for(var i=0; i<Items.length; i++)
-                population.push({name :Items[i].furn_name,start: 0+$Offset,end: Items[i].width+$Offset,wall: ItemPosetion(0+$Offset,Items[i].width+$Offset)});
-    }).fail((json)=>{
-    console.log('fail');
-    });
-    return population;
-}
-
- function ItemPosetion($IndexStart,$IndexEnd)
+ function getPosetion($IndexStart,$IndexEnd)
 {
     if(0<$IndexStart<rightIndex  && 0<$IndexEnd<rightIndex) return 0;
     if(rightIndex<$IndexStart<bottomIndex  && rightIndex<$IndexEnd<bottomIndex) return 3;
@@ -328,18 +234,151 @@
     return null;
 }
 
-function getItems()
+function setPopulation()
 {
-    var anotherWithLargePopulation = geneticalgorithm.clone({
-    population : setPopulation()
+    var selectedIDs = localStorage.getItem('selectedItems');
+    var selectedID = selectedIDs.split(',').map(function(item)
+    { return parseInt(item, 10); });
 
-})
-    console.log(anotherWithLargePopulation);
-    console.log(anotherWithLargePopulation.population());
-        console.log(anotherWithLargePopulation.evolve().evolve().best());
+    $.ajax({
+    method: 'GET',
+    url: 'get_item_byID',
+    dataType: 'json',
+    async:false,
+    data: {
+        IDs:selectedID,
+    }
+    }).done((json) => {
+        var Items=json.selecetdItems;
+        var allItems=[]
+
+        for(var i=0;i<Items.length;i++)
+        {
+            var $Offset = getRandomInt(perimeter);
+            allItems[i]= [Items[i].furn_name, $Offset, $Offset+Items[i].width]
+
+
+        }
+        population = allItems.map((item, idx) => {return { thisItem: item } })
+
+
+    }).fail((json)=>{
+    console.log('fail');
+    });
 }
 
+function getItems()
+{
+    setPopulation();
+    var anotherGA = geneticalgorithm.clone({
+        mutationFunction: mutationFunction,
+        crossoverFunction: crossoverFunction,
+        fitnessFunction: fitnessFunction,
+        population: population,
+        populationSize: 30
+    })
+    console.log("population")
+    console.log( anotherGA.population())
+    for(var i=0; i<100; i++) anotherGA.evolve()
+    console.log( anotherGA.best())
+    console.log("best Score")
+    console.log( anotherGA.bestScore())
 
+
+}
+
+function fitnessFunction(phenotype)
+{
+    var score=0
+
+    for(var i=0; i<phenotype.length;i++)
+    {
+        var Item = phenotype[i].thisItem
+        var ItemName = Item[0].split(' ')
+        var Posetion = getPosetion(Item[1],Item[2])
+
+        //If the item is a bed then it should be on the wall next to the windows wall
+        if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
+        {
+            if(windowPosition==0)
+            {
+                if(Posetion==2 || Posetion==3){score=score+1}
+            }
+            if(windowPosition==3)
+            {
+                if(Posetion==0 || Posetion==1){score=score+1}
+            }
+            if(windowPosition==1)
+            {
+                if(Posetion==3 || Posetion==2){score=score+1}
+            }
+            if(windowPosition==2)
+            {
+                if(Posetion==0 || Posetion==1){score=score+1}
+            }
+        }
+
+        //It the item is a closet then it should be on the same wall with the door
+        if(ItemName[0]=="Closet" || ItemName[1]=="Closet")
+        {
+            if(doorPosition==Posetion)
+            {score = score+1 }
+        }
+
+        //If  Item don't block the door
+        if(Item[2]<DoorIndex[0])
+        {score = score+1}
+        if(Item[1]>DoorIndex[1])
+        {score = score+1}
+
+        //If the Item don't block the window
+        if(Item[2]<WindowIndex[0])
+        {score = score+1}
+        if(Item[1]>WindowIndex[1])
+        {score = score+1}
+
+        //If this Item don't block other item
+        for(var j=i+1; j<phenotype.length;j++)
+        {
+            var otherItem = phenotype[j].thisItem
+            if(Item[2]<otherItem[1])
+            {score = score+1}
+            if(Item[1]>otherItem[2])
+            {score = score+1}
+        }
+    }
+    return score
+}
+
+function mutationFunction(phenotype)
+{
+
+        for(var i=0; i<phenotype.length ; i++)
+        {
+            var offset = getRandomInt(perimeter)
+            var Item = phenotype[i].thisItem
+            Item[1] = Item[1]+offset
+            Item[2]= Item[2]+offset
+        }
+
+        return phenotype
+}
+
+function crossoverFunction(phenotypeA, phenotypeB)
+{
+    var swapIndex = getRandomInt(population.length)
+    var fromA = phenotypeA[swapIndex]
+    var fromB = phenotypeB[swapIndex]
+    phenotypeA[swapIndex]= fromB
+    phenotypeB[swapIndex] = fromA
+    return [phenotypeA, phenotypeB]
+
+}
+
+function getRandomInt(max)
+{
+    return Math.floor(Math.random() * max);
+}
 
 </script>
 @endsection

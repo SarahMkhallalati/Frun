@@ -45,6 +45,12 @@ class Furniture extends Model
 
         return Furniture::whereIn('ID',$IDs)->get();
     }
-
+    public static function getofficRoom()
+    {
+        return Furniture::whereHas('classified', function($classifiy)
+        {
+            $classifiy->where('cls-id',4);
+        })->get();
+    }
 
 }
