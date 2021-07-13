@@ -49,7 +49,20 @@
     var FirstItem = []
     var SecondItem = []
     var population
+    var allItems=[]
+    var stringPop='{'
+    var selectedID
 
+    class ItemInformation
+    {
+        constructor(name , StartIdx, EndIdx)
+        {
+            this.name = name
+            this.StartIdx = StartIdx
+            this.EndIdx=EndIdx
+        }
+
+    }
 
     function DRfunction()
     {
@@ -237,7 +250,7 @@
 function setPopulation()
 {
     var selectedIDs = localStorage.getItem('selectedItems');
-    var selectedID = selectedIDs.split(',').map(function(item)
+    selectedID = selectedIDs.split(',').map(function(item)
     { return parseInt(item, 10); });
 
     $.ajax({
@@ -250,17 +263,30 @@ function setPopulation()
     }
     }).done((json) => {
         var Items=json.selecetdItems;
-        var allItems=[]
+
 
         for(var i=0;i<Items.length;i++)
         {
             var $Offset = getRandomInt(perimeter);
             allItems[i]= [Items[i].furn_name, $Offset, $Offset+Items[i].width]
-
+            // population.push( {thisItem:allItems[i]} )
+            if(i==Items.length-1)
+            {stringPop+='"ItemNumber'+i+'":'+i+'}'}
+            else{stringPop+='"ItemNumber'+i+'":'+i+','}
 
         }
-        population = allItems.map((item, idx) => {return { thisItem: item } })
+        // population = allItems.map((item, idx) => {return { thisItem: item } })
 
+        population = JSON.parse(stringPop)
+
+        for (key in population)
+        {
+            if (population.hasOwnProperty(key))
+            {
+                population[key] = allItems[population[key]]
+            }
+
+        }
 
     }).fail((json)=>{
     console.log('fail');
@@ -269,7 +295,8 @@ function setPopulation()
 
 function getItems()
 {
-    setPopulation();
+    setPopulation()
+
     var anotherGA = geneticalgorithm.clone({
         mutationFunction: mutationFunction,
         crossoverFunction: crossoverFunction,
@@ -290,89 +317,117 @@ function getItems()
 function fitnessFunction(phenotype)
 {
     var score=0
-
-    for(var i=0; i<phenotype.length;i++)
+    for (key in phenotype)
     {
-        var Item = phenotype[i].thisItem
-        var ItemName = Item[0].split(' ')
-        var Posetion = getPosetion(Item[1],Item[2])
-
-        //If the item is a bed then it should be on the wall next to the windows wall
-        if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
+        if (phenotype.hasOwnProperty(key))
         {
-            if(windowPosition==0)
-            {
-                if(Posetion==2 || Posetion==3){score=score+1}
-            }
-            if(windowPosition==3)
-            {
-                if(Posetion==0 || Posetion==1){score=score+1}
-            }
-            if(windowPosition==1)
-            {
-                if(Posetion==3 || Posetion==2){score=score+1}
-            }
-            if(windowPosition==2)
-            {
-                if(Posetion==0 || Posetion==1){score=score+1}
-            }
-        }
+            var Item = phenotype[key]
+            var ItemName = Item[0].split(' ')
+            var Posetion = getPosetion(Item[1],Item[2])
 
-        //It the item is a closet then it should be on the same wall with the door
-        if(ItemName[0]=="Closet" || ItemName[1]=="Closet")
-        {
-            if(doorPosition==Posetion)
-            {score = score+1 }
-        }
+            //If the item is a bed then it should be on the wall next to the windows wall
+            if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
+            {
+                if(windowPosition==0)
+                {
+                    if(Posetion==2 || Posetion==3){score=score+1}
+                }
+                if(windowPosition==3)
+                {
+                    if(Posetion==0 || Posetion==1){score=score+1}
+                }
+                if(windowPosition==1)
+                {
+                    if(Posetion==3 || Posetion==2){score=score+1}
+                }
+                if(windowPosition==2)
+                {
+                    if(Posetion==0 || Posetion==1){score=score+1}
+                }
+            }
 
-        //If  Item don't block the door
-        if(Item[2]<DoorIndex[0])
-        {score = score+1}
-        if(Item[1]>DoorIndex[1])
-        {score = score+1}
+            //It the item is a closet then it should be on the same wall with the door
+            if(ItemName[0]=="Closet" || ItemName[1]=="Closet")
+            {
+                if(doorPosition==Posetion)
+                {score = score+1 }
+            }
 
-        //If the Item don't block the window
-        if(Item[2]<WindowIndex[0])
-        {score = score+1}
-        if(Item[1]>WindowIndex[1])
-        {score = score+1}
-
-        //If this Item don't block other item
-        for(var j=i+1; j<phenotype.length;j++)
-        {
-            var otherItem = phenotype[j].thisItem
-            if(Item[2]<otherItem[1])
+            //If  Item don't block the door
+            if(Item[2]<DoorIndex[0])
             {score = score+1}
-            if(Item[1]>otherItem[2])
+            if(Item[1]>DoorIndex[1])
             {score = score+1}
+
+            //If the Item don't block the window
+            if(Item[2]<WindowIndex[0])
+            {score = score+1}
+            if(Item[1]>WindowIndex[1])
+            {score = score+1}
+
+            //If this Item don't block other item
+            for (key in phenotype)
+            {
+                if (phenotype.hasOwnProperty(key))
+                {
+                    var otherItem = phenotype[key]
+                    if(Item==otherItem){break}
+                    else
+                    {
+                        if(Item[2]<otherItem[1])
+                        {score = score+1}
+                        if(Item[1]>otherItem[2])
+                        {score = score+1}
+                    }
+                }
+            }
         }
     }
+
     return score
 }
 
 function mutationFunction(phenotype)
 {
 
-        for(var i=0; i<phenotype.length ; i++)
+    for (key in phenotype)
+    {
+        if (phenotype.hasOwnProperty(key))
         {
+            var Item = phenotype[key]
             var offset = getRandomInt(perimeter)
-            var Item = phenotype[i].thisItem
             Item[1] = Item[1]+offset
             Item[2]= Item[2]+offset
         }
+    }
 
         return phenotype
 }
 
 function crossoverFunction(phenotypeA, phenotypeB)
 {
-    var swapIndex = getRandomInt(population.length)
-    var fromA = phenotypeA[swapIndex]
-    var fromB = phenotypeB[swapIndex]
-    phenotypeA[swapIndex]= fromB
-    phenotypeB[swapIndex] = fromA
-    return [phenotypeA, phenotypeB]
+    var swapIndex = getRandomInt(selectedID.length)
+    var swapkey
+    var keyArr =[]
+    for(key in phenotypeA)
+    {
+        keyArr.push(key)
+    }
 
+    for(var i =0;i<keyArr.length;i++)
+    {
+        if(i==swapIndex)
+        {
+            swapkey=keyArr[i]
+            break
+        }
+    }
+    var fromA, fromB
+    fromA = phenotypeA[swapkey]
+    fromB = phenotypeB[swapkey]
+    phenotypeA[swapkey]= fromB
+    phenotypeB[swapkey] = fromA
+    return [phenotypeA, phenotypeB]
 }
 
 function getRandomInt(max)
