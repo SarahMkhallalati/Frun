@@ -36,6 +36,7 @@
     var theRoom = document.getElementById("theRoom");
     var selectedIDs = localStorage.getItem('selectedItems');
     var roomKind = localStorage.getItem('roomKind');
+    var rightIndex,bottomIndex,leftIndex
     var topWall,bottomWall,leftWall,rightWall;
     var DoorDistance, WindowDistance;
     var doorPosition, windowPosition;
@@ -53,16 +54,6 @@
     var stringPop='{'
     var selectedID
 
-    class ItemInformation
-    {
-        constructor(name , StartIdx, EndIdx)
-        {
-            this.name = name
-            this.StartIdx = StartIdx
-            this.EndIdx=EndIdx
-        }
-
-    }
 
     function DRfunction()
     {
@@ -226,25 +217,27 @@
 
     }
 
-    function drawLine(ctx, x1, y1, x2, y2)
-    {
-        ctx.beginPath();
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 10;
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.lineCap = 'round';
-    }
 
- function getPosetion($IndexStart,$IndexEnd)
+function getItems()
 {
-    if(0<$IndexStart<rightIndex  && 0<$IndexEnd<rightIndex) return 0;
-    if(rightIndex<$IndexStart<bottomIndex  && rightIndex<$IndexEnd<bottomIndex) return 3;
-    if(bottomIndex<$IndexStart<leftIndex  && bottomIndex<$IndexEnd<leftIndex) return 1;
-    if(leftIndex<$IndexStart<perimeter  && leftIndex<$IndexEnd<perimeter) return 2;
-    return null;
+    setPopulation()
+    console.log(population)
+    var anotherGA = geneticalgorithm.clone({
+        mutationFunction: mutationFunction,
+        crossoverFunction: crossoverFunction,
+        fitnessFunction: fitnessFunction,
+        population: [population],
+        populationSize: 30
+    })
+    console.log("population")
+    console.log( anotherGA.population())
+    for(var i=0; i<100; i++) anotherGA.evolve()
+    console.log("best")
+    console.log( anotherGA.best())
+    console.log("best Score")
+    console.log( anotherGA.bestScore())
+
+
 }
 
 function setPopulation()
@@ -269,13 +262,22 @@ function setPopulation()
         {
             var $Offset = getRandomInt(perimeter);
             allItems[i]= [Items[i].furn_name, $Offset, $Offset+Items[i].width]
-            // population.push( {thisItem:allItems[i]} )
-            if(i==Items.length-1)
-            {stringPop+='"ItemNumber'+i+'":'+i+'}'}
-            else{stringPop+='"ItemNumber'+i+'":'+i+','}
-
+            stringPop+='"ItemNumber'+i+'":'+i+','
         }
-        // population = allItems.map((item, idx) => {return { thisItem: item } })
+
+        for(var i=0;i<Items.length;i++)
+        {
+            var $Offset = getRandomInt(perimeter);
+            var KommodeName = Items[i].furn_name.split(' ')
+            if(KommodeName[0]=="Kommode" || KommodeName[1]=="Kommode")
+            {
+                var j= allItems.length+1
+                allItems[j]=[Items[i].furn_name, $Offset, $Offset+Items[i].width]
+                stringPop+='"ItemNumber'+j+'":'+j+'}'
+                console.log(allItems[j])
+            }
+        }
+
 
         population = JSON.parse(stringPop)
 
@@ -293,30 +295,10 @@ function setPopulation()
     });
 }
 
-function getItems()
-{
-    setPopulation()
-
-    var anotherGA = geneticalgorithm.clone({
-        mutationFunction: mutationFunction,
-        crossoverFunction: crossoverFunction,
-        fitnessFunction: fitnessFunction,
-        population: population,
-        populationSize: 30
-    })
-    console.log("population")
-    console.log( anotherGA.population())
-    for(var i=0; i<100; i++) anotherGA.evolve()
-    console.log( anotherGA.best())
-    console.log("best Score")
-    console.log( anotherGA.bestScore())
-
-
-}
-
 function fitnessFunction(phenotype)
 {
     var score=0
+    var BedPose
     for (key in phenotype)
     {
         if (phenotype.hasOwnProperty(key))
@@ -324,10 +306,11 @@ function fitnessFunction(phenotype)
             var Item = phenotype[key]
             var ItemName = Item[0].split(' ')
             var Posetion = getPosetion(Item[1],Item[2])
-
+            var BedStartIdx, BedEndIdx
             //If the item is a bed then it should be on the wall next to the windows wall
             if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
             {
+                BedPose = Posetion
                 if(windowPosition==0)
                 {
                     if(Posetion==2 || Posetion==3){score=score+1}
@@ -352,6 +335,15 @@ function fitnessFunction(phenotype)
                 if(doorPosition==Posetion)
                 {score = score+1 }
             }
+
+            //If the item is a Kommode then it should be side by side with the bed
+            if(ItemName[0]=="Kommode" || ItemName[1]=="Kommode")
+            {
+                if(Posetion==BedPose){score= score+1}
+                if(Item[2]== BedEndIdx || Item[1]==BedStartIdx)
+                {score= score+1}
+            }
+
 
             //If  Item don't block the door
             if(Item[2]<DoorIndex[0])
@@ -380,6 +372,24 @@ function fitnessFunction(phenotype)
                         {score = score+1}
                     }
                 }
+            }
+
+            if(Item[1]<rightWall && Item[2]>rightWall)
+            {
+                score=0
+                return score
+            }
+
+            if(Item[1]<bottomWall && Item[2]>bottomWall)
+            {
+                score=0
+                return score
+            }
+
+            if(Item[1]<leftWall && Item[2]>leftWall)
+            {
+                score=0
+                return score
             }
         }
     }
@@ -433,6 +443,27 @@ function crossoverFunction(phenotypeA, phenotypeB)
 function getRandomInt(max)
 {
     return Math.floor(Math.random() * max);
+}
+
+function drawLine(ctx, x1, y1, x2, y2)
+{
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 10;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.lineCap = 'round';
+}
+
+ function getPosetion($IndexStart,$IndexEnd)
+{
+    if(0<$IndexStart<rightIndex  && 0<$IndexEnd<rightIndex) return 0;
+    if(rightIndex<$IndexStart<bottomIndex  && rightIndex<$IndexEnd<bottomIndex) return 3;
+    if(bottomIndex<$IndexStart<leftIndex  && bottomIndex<$IndexEnd<leftIndex) return 1;
+    if(leftIndex<$IndexStart<perimeter  && leftIndex<$IndexEnd<perimeter) return 2;
+    return null;
 }
 
 </script>
