@@ -155,7 +155,6 @@
   function deletLocalSorage()
   {
     localStorage.clear();
-    console.log(localStorage);
   }
 
   function DRfunction()
@@ -190,7 +189,6 @@
       if(p[3]==0)
       {isDrawing = false;}
       else {isDrawing=true;}
-      console.log(isDrawing);
     });
 
     c.addEventListener('mouseup', e =>
@@ -321,7 +319,6 @@
         console.log('fail');
     });
     nextBT.style.display = "block";
-    console.log(localStorage);
 
   }
 
@@ -343,12 +340,11 @@
         if(totalItemSpace> roomSpace*65/100)
         {
             alert("you can't add any more Items");
+            totalItemSpace = totalItemSpace - itemSpace;
             return;
         }
     }
     selectedIDs.push($cardID);
-
-    console.log(selectedIDs);
   }
 
   nextBT.onclick = function()
