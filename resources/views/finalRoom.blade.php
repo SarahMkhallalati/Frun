@@ -221,23 +221,20 @@
 function getItems()
 {
     setPopulation()
-    console.log(population)
-    var anotherGA = geneticalgorithm.clone({
-        mutationFunction: mutationFunction,
-        crossoverFunction: crossoverFunction,
-        fitnessFunction: fitnessFunction,
-        population: [population],
-        populationSize: 30
-    })
-    console.log("population")
-    console.log( anotherGA.population())
-    for(var i=0; i<100; i++) anotherGA.evolve()
-    console.log("best")
-    console.log( anotherGA.best())
-    console.log("best Score")
-    console.log( anotherGA.bestScore())
-
-
+    // var anotherGA = geneticalgorithm.clone({
+    //     mutationFunction: mutationFunction,
+    //     crossoverFunction: crossoverFunction,
+    //     fitnessFunction: fitnessFunction,
+    //     population: [population],
+    //     populationSize: 30
+    // })
+    // console.log("population")
+    // console.log( anotherGA.population())
+    // for(var i=0; i<1000; i++) anotherGA.evolve()
+    // console.log("best")
+    // console.log( anotherGA.best())
+    // console.log("best Score")
+    // console.log( anotherGA.bestScore())
 }
 
 function setPopulation()
@@ -256,28 +253,29 @@ function setPopulation()
     }
     }).done((json) => {
         var Items=json.selecetdItems;
-
-
         for(var i=0;i<Items.length;i++)
         {
-            var $Offset = getRandomInt(perimeter);
-            allItems[i]= [Items[i].furn_name, $Offset, $Offset+Items[i].width]
+            var Offset = getRandomInt(perimeter);
+            var y= mod(Offset+Items[i].width,perimeter)
+            allItems[i]= [Items[i].furn_name, Offset, y, null ,Items[i].depth]
             stringPop+='"ItemNumber'+i+'":'+i+','
+            solveDeadSulutions(allItems[i],allItems)
         }
 
-        for(var i=0;i<Items.length;i++)
+        for(var i=1;i<Items.length;i++)
         {
-            var $Offset = getRandomInt(perimeter);
+            var Offset = getRandomInt(perimeter);
             var KommodeName = Items[i].furn_name.split(' ')
             if(KommodeName[0]=="Kommode" || KommodeName[1]=="Kommode")
             {
-                var j= allItems.length+1
-                allItems[j]=[Items[i].furn_name, $Offset, $Offset+Items[i].width]
+                var j= allItems.length
+                var Offset = getRandomInt(perimeter);
+                var y= mod(Offset+Items[i].width,perimeter)
+                allItems[j]= [Items[i].furn_name, Offset, y, null ,Items[i].depth]
                 stringPop+='"ItemNumber'+j+'":'+j+'}'
-                console.log(allItems[j])
+                solveDeadSulutions(allItems[i],allItems)
             }
         }
-
 
         population = JSON.parse(stringPop)
 
@@ -287,7 +285,6 @@ function setPopulation()
             {
                 population[key] = allItems[population[key]]
             }
-
         }
 
     }).fail((json)=>{
@@ -299,6 +296,7 @@ function fitnessFunction(phenotype)
 {
     var score=0
     var BedPose
+    var mustDie=false
     for (key in phenotype)
     {
         if (phenotype.hasOwnProperty(key))
@@ -307,6 +305,7 @@ function fitnessFunction(phenotype)
             var ItemName = Item[0].split(' ')
             var Posetion = getPosetion(Item[1],Item[2])
             var BedStartIdx, BedEndIdx
+
             //If the item is a bed then it should be on the wall next to the windows wall
             if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
             {
@@ -346,16 +345,40 @@ function fitnessFunction(phenotype)
 
 
             //If  Item don't block the door
-            if(Item[2]<DoorIndex[0])
-            {score = score+1}
-            if(Item[1]>DoorIndex[1])
-            {score = score+1}
+            if(DoorIndex[0]<Item[1] && DoorIndex[0]<Item[2] && DoorIndex[0]<Item[3])
+            {
+                if(DoorIndex[1]<Item[1] && DoorIndex[1]<Item[2] && DoorIndex[1]<Item[3])
+                {
+                    score = score+1
+                    // the door is on the left of the Item
+                }
+            }
+            if(DoorIndex[0]>Item[1] && DoorIndex[0]>Item[2] && DoorIndex[0]>Item[3])
+            {
+                if(DoorIndex[1]>Item[1] && DoorIndex[1]>Item[2] && DoorIndex[1]>Item[3])
+                {
+                    score = score+1
+                    // the door is on the right of the Item
+                }
+            }
 
             //If the Item don't block the window
-            if(Item[2]<WindowIndex[0])
-            {score = score+1}
-            if(Item[1]>WindowIndex[1])
-            {score = score+1}
+            if(WindowIndex[0]<Item[1] && WindowIndex[0]<Item[2] && WindowIndex[0]<Item[3])
+            {
+                if(WindowIndex[1]<Item[1] && WindowIndex[1]<Item[2] && WindowIndex[1]<Item[3])
+                {
+                    score = score+1
+                    // the window is on the left of the Item
+                }
+            }
+            if(WindowIndex[0]>Item[1] && WindowIndex[0]>Item[2] && WindowIndex[0]>Item[3])
+            {
+                if(WindowIndex[1]>Item[1] && WindowIndex[1]>Item[2] && WindowIndex[1]>Item[3])
+                {
+                    score = score+1
+                    // the window is on the right of the Item
+                }
+            }
 
             //If this Item don't block other item
             for (key in phenotype)
@@ -366,33 +389,35 @@ function fitnessFunction(phenotype)
                     if(Item==otherItem){break}
                     else
                     {
-                        if(Item[2]<otherItem[1])
-                        {score = score+1}
-                        if(Item[1]>otherItem[2])
-                        {score = score+1}
+                        if(otherItem[1]<Item[1] && otherItem[1]<Item[2] && otherItem[1]<Item[3])
+                        {
+                            if(otherItem[2]<Item[1] && otherItem[2]<Item[2] && otherItem[2]<Item[3])
+                            {
+                                if(otherItem[3]<Item[1] && otherItem[3]<Item[2] && otherItem[3]<Item[3])
+                                {
+                                    score = score+1
+                                    // the Item is on the right of the other Item
+                                }
+                            }
+                        }
+
+                        if(otherItem[1]>Item[1] && otherItem[1]>Item[2] && otherItem[1]>Item[3])
+                        {
+                            if(otherItem[2]>Item[1] && otherItem[2]>Item[2] && otherItem[2]>Item[3])
+                            {
+                                if(otherItem[3]>Item[1] && otherItem[3]>Item[2] && otherItem[3]>Item[3])
+                                {
+                                    score = score+1
+                                    // the Item is on the left of the other Item
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            if(Item[1]<rightWall && Item[2]>rightWall)
-            {
-                score=0
-                return score
-            }
-
-            if(Item[1]<bottomWall && Item[2]>bottomWall)
-            {
-                score=0
-                return score
-            }
-
-            if(Item[1]<leftWall && Item[2]>leftWall)
-            {
-                score=0
-                return score
-            }
         }
     }
+
 
     return score
 }
@@ -400,19 +425,23 @@ function fitnessFunction(phenotype)
 function mutationFunction(phenotype)
 {
 
+    var allItems
+    for (key in phenotype)
+    { if(phenotype.hasOwnProperty(key)) { allItems.pish(phenotype[key]) } }
+
     for (key in phenotype)
     {
         if (phenotype.hasOwnProperty(key))
         {
             var Item = phenotype[key]
-            var offset = getRandomInt(perimeter)
-            Item[1] = Item[1]+offset
-            Item[2]= Item[2]+offset
+            moveItem(Item)
+            solveDeadSulutions(Item, allItems)
         }
     }
 
-        return phenotype
+    return phenotype
 }
+
 
 function crossoverFunction(phenotypeA, phenotypeB)
 {
@@ -440,6 +469,90 @@ function crossoverFunction(phenotypeA, phenotypeB)
     return [phenotypeA, phenotypeB]
 }
 
+function solveDeadSulutions(Item, allItems)
+{
+    var done=false
+    // while(!done)
+    // {
+        //this item is over anther
+        for (var i=0;i<allItems.length;i++)
+        {
+            var otherItem = allItems[i]
+            if(Item==otherItem){break}
+            else
+            {
+                if(Item[3]>Item[2])
+                {
+                    while(otherItem[1]>Item[1] && otherItem[1]<Item[3])
+                    {moveItem(Item)}
+                    while(otherItem[2]>Item[1]  && otherItem[2]<Item[3])
+                    {moveItem(Item)}
+                    while(otherItem[3]>Item[1] && otherItem[3]<Item[3])
+                    {moveItem(Item)}
+                }
+
+                if(Item[3]<Item[1])
+                {
+                    while(otherItem[1]>Item[3] && otherItem[1]<Item[2])
+                    {moveItem(Item)}
+                    while(otherItem[2]>Item[3]  && otherItem[2]<Item[2])
+                    {moveItem(Item)}
+                    while(otherItem[3]>Item[3] && otherItem[3]<Item[2])
+                    {moveItem(Item)}
+                }
+            }
+        }
+
+        //if the item is cover any corner
+        while(Item[1]<rightIndex && Item[2]>rightIndex || Item[1]<bottomIndex && Item[2]>bottomIndex || Item[1]<leftIndex && Item[2]>leftIndex || Item[1]<roomArray.length && Item[2]>0)
+        {moveItem(Item)}
+
+        //this item is over anther
+        // for (var i=0;i<allItems.length;i++)
+        // {
+        //     var otherItem = allItems[i]
+        //     if(Item==otherItem){break}
+        //     else
+        //     {
+        //         if(otherItem[1]<Item[1] && otherItem[1]<Item[3] && otherItem[2]<Item[1]  && otherItem[2]<Item[3] && otherItem[3]<Item[1] && otherItem[3]<Item[3])
+        //         {
+        //             done=true
+        //             break
+        //         }
+
+        //         if(otherItem[1]>Item[1] && otherItem[1]>Item[3] && otherItem[2]>Item[1]  && otherItem[2]>Item[3] && otherItem[3]>Item[1] && otherItem[3]>Item[3])
+        //         {
+        //             done=true
+        //             break
+        //         }
+        //     }
+        // }
+
+    // }
+
+    //if the Item is on any corner then the depth must be consedered
+    var depth = Item[4]
+
+    if(Item[2]==0 || Item[2]==roomArray.length)
+    {Item[3]=depth}
+    if(Item[2]==rightIndex)
+    {Item[3]=depth+rightIndex}
+    if(Item[2]==bottomIndex)
+    {Item[3]=depth+bottomIndex}
+    if(Item[2]==leftIndex)
+    {Item[3]=depth+leftIndex}
+
+    if(Item[1]==0 || Item[1]==roomArray.length)
+    {Item[3]=roomArray.length-depth }
+    if(Item[1]==rightIndex)
+    {Item[3]=rightIndex-depth}
+    if(Item[1]==bottomIndex)
+    {Item[3]=bottomIndex-depth}
+    if(Item[1]==leftIndex)
+    {Item[3]=leftIndex-depth}
+
+}
+
 function getRandomInt(max)
 {
     return Math.floor(Math.random() * max);
@@ -464,6 +577,35 @@ function drawLine(ctx, x1, y1, x2, y2)
     if(bottomIndex<$IndexStart<leftIndex  && bottomIndex<$IndexEnd<leftIndex) return 1;
     if(leftIndex<$IndexStart<perimeter  && leftIndex<$IndexEnd<perimeter) return 2;
     return null;
+}
+
+function moveItem(Item)
+{
+
+        var offset = getRandomInt(perimeter)
+
+        Item[1] = Item[1]+offset
+        if(Item[1]>roomArray.length)
+        {Item[1]=mod(Item[1],roomArray.length)}
+
+        Item[2]= Item[2]+offset
+        if(Item[2]>roomArray.length)
+        {Item[2]=mod(Item[2],roomArray.length)}
+
+}
+
+function mod(x,y)
+{
+    var z=x-y
+    if(z>0)
+    {
+        while(z>y)
+        {
+            z=z-y
+        }
+    return z
+    }
+    else return x
 }
 
 </script>
