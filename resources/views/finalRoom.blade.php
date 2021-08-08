@@ -230,14 +230,12 @@ function getItems()
     })
     console.log("population")
     console.log( anotherGA.population())
-    for(var i=0; i<1000; i++) anotherGA.evolve()
+    for(var i=0; i<10000; i++) anotherGA.evolve()
     console.log("best")
-    console.log( anotherGA.best())
+    var x = anotherGA.best()
+    console.log( x)
     console.log("best Score")
     console.log( anotherGA.bestScore())
-
-    var x= fitnessFunction(anotherGA.best())
-    console.log(x)
 
 
 }
@@ -374,9 +372,9 @@ function fitnessFunction(phenotype)
 
 
             //check if this Item block another
-            for (var i=0;i<allItems.length;i++)
+            for (key in phenotype)
             {
-                var otherItem = allItems[i]
+                var otherItem = phenotype[key]
                 if(Item==otherItem){break}
                 else
                 {
@@ -384,8 +382,9 @@ function fitnessFunction(phenotype)
                     {
                         if(otherItem[1]>Item[1] && otherItem[1]<Item[3] || otherItem[2]>Item[1]  && otherItem[2]<Item[3] || otherItem[3]>Item[1] && otherItem[3]<Item[3])
                         {
-                            score = -1000000000
+                            // score = -1000000000
                             BlockAnother = true
+                            mustDie =true
                         }
                         else
                         {
@@ -398,8 +397,9 @@ function fitnessFunction(phenotype)
                     {
                         if(otherItem[1]>Item[3] && otherItem[1]<Item[2] || otherItem[2]>Item[3]  && otherItem[2]<Item[2] || otherItem[3]>Item[3] && otherItem[3]<Item[2])
                         {
-                            score = -1000000000
+                            // score = -1000000000
                             BlockAnother = true
+                            mustDie =true
                         }
                         else
                         {
@@ -410,8 +410,9 @@ function fitnessFunction(phenotype)
 
                     if(Item[1] == otherItem[1] || Item[2] == otherItem[2] || Item[3] == otherItem[3])
                     {
-                        score = -1000000000
+                        // score = -1000000000
                         BlockAnother = true
+                        mustDie =true
                     }
                     else
                     {
@@ -424,8 +425,9 @@ function fitnessFunction(phenotype)
             //check if the item is on any corner
             if(Item[1]<rightIndex && Item[2]>rightIndex || Item[1]<bottomIndex && Item[2]>bottomIndex || Item[1]<leftIndex && Item[2]>leftIndex || Item[1]<roomArray.length && Item[2]>0)
             {
-                score = -1000000000
+                // score = -1000000000
                 onCorner = true
+                mustDie =true
             }
             else
             {
@@ -443,10 +445,12 @@ function fitnessFunction(phenotype)
                 }
                 else
                 {
-                    score =-1000000000
+                    // score =-1000000000
                     BlockDoor = true
+                    mustDie =true
                 }
             }
+
             if(DoorIndex[0]>Item[1] && DoorIndex[0]>Item[2] && DoorIndex[0]>Item[3])
             {
                 if(DoorIndex[1]>Item[1] && DoorIndex[1]>Item[2] && DoorIndex[1]>Item[3])
@@ -456,8 +460,9 @@ function fitnessFunction(phenotype)
                 }
                 else
                 {
-                    score =-1000000000
+                    // score =-1000000000
                     BlockDoor = true
+                    mustDie =true
                 }
             }
 
@@ -471,8 +476,9 @@ function fitnessFunction(phenotype)
                 }
                 else
                 {
-                    score =-1000000000
+                    // score =-1000000000
                     BlockWindow = true
+                    mustDie =true
                 }
             }
             if(WindowIndex[0]>Item[1] && WindowIndex[0]>Item[2] && WindowIndex[0]>Item[3])
@@ -484,8 +490,9 @@ function fitnessFunction(phenotype)
                 }
                 else
                 {
-                    score =-1000000000
+                    // score =-1000000000
                     BlockWindow = true
+                    mustDie =true
                 }
             }
 
@@ -498,7 +505,8 @@ function fitnessFunction(phenotype)
     }
 
 
-    return score
+    if(mustDie){return -1000000}
+    else{return score}
 }
 
 function mutationFunction(phenotype)
@@ -623,123 +631,7 @@ function mod(x,y)
     else return x
 }
 
-// function solveDeadSulutions(Item, allItems)
-// {
-//     var done=false
-//     // while(!done)
-//     // {
-//         //this item is over anther
-//         for (var i=0;i<allItems.length;i++)
-//         {
-//             var otherItem = allItems[i]
-//             if(Item==otherItem){break}
-//             else
-//             {
-//                 if(Item[3]>Item[2])
-//                 {
-//                     while(otherItem[1]>Item[1] && otherItem[1]<Item[3])
-//                     {moveItem(Item)}
-//                     while(otherItem[2]>Item[1]  && otherItem[2]<Item[3])
-//                     {moveItem(Item)}
-//                     while(otherItem[3]>Item[1] && otherItem[3]<Item[3])
-//                     {moveItem(Item)}
-//                 }
 
-//                 if(Item[3]<Item[1])
-//                 {
-//                     while(otherItem[1]>Item[3] && otherItem[1]<Item[2])
-//                     {moveItem(Item)}
-//                     while(otherItem[2]>Item[3]  && otherItem[2]<Item[2])
-//                     {moveItem(Item)}
-//                     while(otherItem[3]>Item[3] && otherItem[3]<Item[2])
-//                     {moveItem(Item)}
-//                 }
-//             }
-//         }
-
-//         //if the item is cover any corner
-//         while(Item[1]<rightIndex && Item[2]>rightIndex || Item[1]<bottomIndex && Item[2]>bottomIndex || Item[1]<leftIndex && Item[2]>leftIndex || Item[1]<roomArray.length && Item[2]>0)
-//         {moveItem(Item)}
-
-//         //this item is over anther
-//         for (var i=0;i<allItems.length;i++)
-//         {
-//             var otherItem = allItems[i]
-//             if(Item==otherItem){break}
-//             else
-//             {
-//                 if(otherItem[1]<Item[1] && otherItem[1]<Item[3] && otherItem[2]<Item[1]  && otherItem[2]<Item[3] && otherItem[3]<Item[1] && otherItem[3]<Item[3])
-//                 {
-//                     done=true
-//                     break
-//                 }
-
-//                 if(otherItem[1]>Item[1] && otherItem[1]>Item[3] && otherItem[2]>Item[1]  && otherItem[2]>Item[3] && otherItem[3]>Item[1] && otherItem[3]>Item[3])
-//                 {
-//                     done=true
-//                     break
-//                 }
-//             }
-//         }
-
-//         //If this Item don't block other item
-//         for (key in phenotype)
-//         {
-//             if (phenotype.hasOwnProperty(key))
-//             {
-//                 var otherItem = phenotype[key]
-//                 if(Item==otherItem){break}
-//                 else
-//                 {
-//                     if(otherItem[1]<Item[1] && otherItem[1]<Item[2] && otherItem[1]<Item[3])
-//                     {
-//                         if(otherItem[2]<Item[1] && otherItem[2]<Item[2] && otherItem[2]<Item[3])
-//                         {
-//                             if(otherItem[3]<Item[1] && otherItem[3]<Item[2] && otherItem[3]<Item[3])
-//                             {
-//                                 score = score+1
-//                                 // the Item is on the right of the other Item
-//                             }
-//                             else score = 10^-9
-//                         }
-//                     }
-//                     if(otherItem[1]>Item[1] && otherItem[1]>Item[2] && otherItem[1]>Item[3])
-//                     {
-//                         if(otherItem[2]>Item[1] && otherItem[2]>Item[2] && otherItem[2]>Item[3])
-//                         {
-//                             if(otherItem[3]>Item[1] && otherItem[3]>Item[2] && otherItem[3]>Item[3])
-//                             {
-//                                 score = score+1
-//                                 // the Item is on the left of the other Item
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-
-//    // if the Item is on any corner then the depth must be consedered
-//     var depth = Item[4]
-
-//     if(Item[2]==0 || Item[2]==roomArray.length)
-//     {Item[3]=depth}
-//     if(Item[2]==rightIndex)
-//     {Item[3]=depth+rightIndex}
-//     if(Item[2]==bottomIndex)
-//     {Item[3]=depth+bottomIndex}
-//     if(Item[2]==leftIndex)
-//     {Item[3]=depth+leftIndex}
-
-//     if(Item[1]==0 || Item[1]==roomArray.length)
-//     {Item[3]=roomArray.length-depth }
-//     if(Item[1]==rightIndex)
-//     {Item[3]=rightIndex-depth}
-//     if(Item[1]==bottomIndex)
-//     {Item[3]=bottomIndex-depth}
-//     if(Item[1]==leftIndex)
-//     {Item[3]=leftIndex-depth}
-
-// }
 
 </script>
 @endsection
