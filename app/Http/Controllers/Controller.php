@@ -126,7 +126,21 @@ class Controller extends BaseController
        // return $request->all();
         $materialId = $request->get('material_id');
         $price = $request->get('price');
-        $furnitures = Furniture::filter($materialId,$price);
+        $priceMin = 0;
+        $priceMax = 0;
+        if($price == 1)
+        {
+            $priceMin = 80;
+            $priceMax = 200;
+        }else if($price == 2)
+        {
+            $priceMin = 205;
+            $priceMax = 300;
+        }else if($price == 3)
+        {
+            $priceMin = 300;
+        }
+        $furnitures = Furniture::filter($materialId,$priceMin,$priceMax);
         return view('index',['furnitures' => $furnitures]);
 
     }

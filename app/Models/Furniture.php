@@ -73,10 +73,14 @@ class Furniture extends Model
             ->get();
     }
 
-    public static function filter($materialId, $price)
+    public static function filter($materialId, $priceMin,$priceMax)
     {
         return Furniture::when($materialId, function ($furnatiure) use ($materialId) {
             $furnatiure->where('material_id', $materialId);
+        })->when($priceMin, function ($furnatiure) use ($priceMin) {
+            $furnatiure->where('price','>', $priceMin);
+        })->when($materialId, function ($furnatiure) use ($priceMax) {
+            $furnatiure->where('price','<', $priceMax);
         })
             ->join('materials', 'materials.id', '=', 'furniture.material_id')
             ->select('furniture.*', 'materials.name as material')
