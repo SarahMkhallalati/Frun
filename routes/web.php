@@ -50,3 +50,6 @@ Route::get('chepest',[Controller::class,'getchep'])->name('chepest');
 
 Route::get('search',[Controller::class,'search'])->name('serach');
 
+Route::get('filter',[Controller::class,'filter'])->name('filter');
+
+

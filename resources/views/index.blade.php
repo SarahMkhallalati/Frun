@@ -15,34 +15,37 @@
        <b style="font-size:20px;">Filtered With:</b>
        <b style="margin-left:20px;">Material:</b>
        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+          <input class="form-check-input" type="radio" name="material_id" id="inlineRadio1" value="7">
           <label class="form-check-label" for="inlineRadio1">Wood</label>
         </div>
    <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="3">
      <label class="form-check-label" for="inlineRadio2">Fabric</label>
    </div>
    <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option3">
+     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio1" value="5">
      <label class="form-check-label" for="inlineRadio1">Leather</label>
    </div>
    <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option4">
+     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="1">
      <label class="form-check-label" for="inlineRadio2">Bambo</label>
    </div>
         <b style="margin-left:40px;">Price:</b>
         <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="group2" id="inlineRadio2" value="opt1">
+     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="1">
      <label class="form-check-label" for="inlineRadio2">80$-200$</label>
    </div>
    <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="group2" id="inlineRadio2" value="opt2">
+     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="2">
      <label class="form-check-label" for="inlineRadio2">205$-300$</label>
    </div>
    <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="group2" id="inlineRadio2" value="opt3">
+     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="3">
      <label class="form-check-label" for="inlineRadio2">More than 300$</label>
    </div>
+    <div>
+        <button type="button" onclick="filter()">Filter</button>
+    </div>
 
      </div>
     </aside>
@@ -95,6 +98,17 @@ var AddFav = document.getElementById("AddToFavBT");
         }).done((json) =>{
             alert("Added to favorite");
         }).fail((json)=>{alert("Already exisit");});
+    }
+
+    function filter()
+    {
+       materialId = document.querySelector('input[name="material_id"]:checked')?.value ?? 0;
+       price = document.querySelector('input[name="price_group"]:checked')?.value ?? 0;
+       if(!materialId && !price)
+       alert('choose some filters first')
+      else  window.location.href = "/filter?material_id="+materialId+"&price="+price;
+
+
     }
 
 </script>

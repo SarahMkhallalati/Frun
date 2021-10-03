@@ -121,4 +121,14 @@ class Controller extends BaseController
 
     }
 
+    public function filter(Request $request)
+    {
+       // return $request->all();
+        $materialId = $request->get('material_id');
+        $price = $request->get('price');
+        $furnitures = Furniture::filter($materialId,$price);
+        return view('index',['furnitures' => $furnitures]);
+
+    }
+
 }
