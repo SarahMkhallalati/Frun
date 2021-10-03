@@ -19,6 +19,8 @@
     <script type="text/javascript" src="{{asset('JS/jquery-3.4.1.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('JS/popper.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('JS/js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('JS/main.js')}}"></script>
+
 
 
 

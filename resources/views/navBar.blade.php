@@ -40,7 +40,7 @@
       <div class="container-fluid" style="margen-left:500";>
         <form action="" method="GET" class="d-flex" style="padding-left:500px;">
           <input class="form-control me-2" style="display: inline-block; width: 250px; padding-left: 450;" id="txtsearch" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-white" style="background-color: #1976D2; color:white;" type="submit">Search</button>
+            <button class="btn btn-outline-white" style="background-color: #1976D2; color:white;" type="button" onclick="search()">Search</button>
         </form>
       </div>
       <div style="display: flex; padding-left:15">

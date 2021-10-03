@@ -18,18 +18,26 @@ class Furniture extends Model
 
     public static function getBedRooms()
     {
-        return Furniture::whereHas('classified', function($classifiy)
+        return Furniture::
+        whereHas('classified', function($classifiy)
         {
             $classifiy->where('cls-id',1);
-        })->get();
+        })
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
     }
+
 
     public static function getLivingRoom()
     {
         return Furniture::whereHas('classified', function($classifiy)
         {
             $classifiy->where('cls-id',2);
-        })->get();
+        })
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
     }
 
     public static function getDataByKind($kind)
@@ -37,20 +45,37 @@ class Furniture extends Model
         return Furniture::whereHas('classified', function($classifiy) use ($kind)
         {
             $classifiy->where('cls-id',$kind);
-        })->get();
+        })
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
     }
 
     public static function getDataByID($IDs)
     {
 
-        return Furniture::whereIn('ID',$IDs)->get();
+        return Furniture::whereIn('ID',$IDs)
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
     }
     public static function getofficRoom()
     {
         return Furniture::whereHas('classified', function($classifiy)
         {
             $classifiy->where('cls-id',4);
-        })->get();
+        })
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
+    }
+
+    public static function search($query)
+    {
+        return Furniture::where('furn_name','like',"%$query%")
+                         ->join('materials','materials.id','=','furniture.material_id')
+                         ->select('furniture.*','materials.name as material')
+                         ->get();
     }
 
 }

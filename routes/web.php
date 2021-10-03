@@ -47,3 +47,6 @@ Route::view('login', 'login')->name('login');
 Route::get('/officRoom',[Controller::class,'officRoom'])->name('officRoom');
 
 Route::get('chepest',[Controller::class,'getchep'])->name('chepest');
+
+Route::get('search',[Controller::class,'search'])->name('serach');
+

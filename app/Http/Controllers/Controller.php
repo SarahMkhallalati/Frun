@@ -73,10 +73,19 @@ class Controller extends BaseController
             ->join('cus_own', 'classified.fru-id', '=', 'cus_own.furn_id')
             ->get();
         $classified = Classified::where("cls-id", $kind)->get();
-        $kindVar = Furniture::whereIn("ID",$favorites->pluck("fru-id"))->get();
-        $kindData = Furniture::whereIn("ID",$classified ->pluck("fru-id"))->get();
+        $kindVar = Furniture::whereIn("furniture.ID",$favorites->pluck("fru-id"))
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
+        $kindData = Furniture::whereIn("furniture.ID",$classified ->pluck("fru-id"))
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
         $officeID = Classified::where("cls-id", 4)->get();
-        $officeData = Furniture::whereIn("ID",$officeID ->pluck("fru-id"))->get();
+        $officeData = Furniture::whereIn("furniture.ID",$officeID ->pluck("fru-id"))
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
         return Response()->json(['kind_fav' => $kindVar,'kind_data'=>$kindData,'office_data'=>$officeData],200);
     }
 
@@ -90,7 +99,10 @@ class Controller extends BaseController
 
     public function getchep (Request $request)
     {
-        $cheps = Furniture::where("price", '<=' , 200) ->get();
+        $cheps = Furniture::where("price", '<=' , 200)
+        ->join('materials','materials.id','=','furniture.material_id')
+        ->select('furniture.*','materials.name as material')
+        ->get();
         return view('Cheapest',['cheps' => $cheps]);
 
     }
@@ -99,6 +111,14 @@ class Controller extends BaseController
         $officRooms = Furniture::getofficRoom();
 
         return view('rooms',['rooms' => $officRooms , 'roomName' => 'offic Room']);
+    }
+
+    public function search(Request $request)
+    {
+       // return $request->all();
+        $furnitures = Furniture::search($request->get('query'));
+        return view('index',['furnitures' => $furnitures]);
+
     }
 
 }
