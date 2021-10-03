@@ -52,11 +52,11 @@ class Controller extends BaseController
     public function CreatFav(Request $request)
     {
         $classified = Classified::where("fru-id",$request->get("ID"))->first();
-        $customerFur = CustomerFurniture::where("cust-id",1)->where("classified-id",$classified->ID)->first();
+        $customerFur = CustomerFurniture::where("cust-id",1)->where("cls-id",$classified->ID)->first();
         if(empty($customerFur))
         {CustomerFurniture::create([
             "cust-id" => 1,
-            "classified-id"=> $classified->ID
+            "cls-id"=> $classified->ID
         ]);
         return Response()->json(['Classified' => $classified],200);
         }
