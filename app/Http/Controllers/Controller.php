@@ -51,14 +51,16 @@ class Controller extends BaseController
 
     public function CreatFav(Request $request)
     {
-        $classified = Classified::where("fru-id",$request->get("ID"))->first();
-        $customerFur = CustomerFurniture::where("cust-id",1)->where("cls-id",$classified->ID)->first();
+        //$classified = Classified::where("fru-id",$request->get("ID"))->first();
+        $customerFur = CustomerFurniture::where("cust_id",1)
+        ->where("furn_id",$request->get("ID"))
+        ->first();
         if(empty($customerFur))
         {CustomerFurniture::create([
-            "cust-id" => 1,
-            "cls-id"=> $classified->ID
+            "cust_id" => 1,
+            "furn_id"=> $request->get("ID")
         ]);
-        return Response()->json(['Classified' => $classified],200);
+        return Response()->json([],200);
         }
         return Response()->json(['message' => "already exist"],401);
     }
@@ -68,7 +70,7 @@ class Controller extends BaseController
     {
         $kind = $request->get('kind');
         $favorites = Classified::where("cls-id", $kind)
-            ->join('cus_furn', 'classified.ID', '=', 'cus_furn.classified-id')
+            ->join('cus_own', 'classified.fru-id', '=', 'cus_own.furn_id')
             ->get();
         $classified = Classified::where("cls-id", $kind)->get();
         $kindVar = Furniture::whereIn("ID",$favorites->pluck("fru-id"))->get();
