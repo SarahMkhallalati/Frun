@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomerFurniture extends Model
 {
     use HasFactory;
-    protected $table = 'cus_furn';
+    protected $table = 'cus_own';
     public $timestamps = false;
     protected $fillable = ['cust-id', 'classified-id'];
 }

@@ -70,7 +70,7 @@
     </div>
 
 </div>
-<button id="test" type="button" > test </button>
+
 
 @include('footer')
 
@@ -97,11 +97,6 @@ var AddFav = document.getElementById("AddToFavBT");
         }).fail((json)=>{alert("Already exisit");});
     }
 
-    test.onclick = function() {
-        x = geneticalgorithm.populationsixe;
-        console.log(x);
-        console.log("x");
-    }
 </script>
 @endsection
 

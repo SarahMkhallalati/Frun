@@ -60,7 +60,9 @@
         theRoom.innerHTML= '<canvas id="myCanvas" width="1520" height="'+(areaHeight+50)+'" ></canvas>';
         c=document.getElementById("myCanvas");
         ctx=c.getContext("2d");
-        ctx.rect(500, 10, areaWidth, areaHeight);
+        ctx.fillStyle = '#eee'
+        ctx.fillRect(500, 10, areaWidth, areaHeight);
+
 
         topWall = [500,10,500+(areaWidth),10];
         bottomWall = [500, 10+(areaHeight),500+(areaWidth),10+(areaHeight)];
@@ -68,7 +70,7 @@
         rightWall = [500+(areaWidth),10,500+(areaWidth),10+(areaHeight)];
 
         ctx.lineWidth = "10";
-        ctx.strokeStyle = "black";
+        // ctx.strokeStyle = "black";
         ctx.stroke();
 
 
@@ -236,19 +238,17 @@ function getItems()
     for(var i=0; i<10; i++)
     {
         anotherGA.evolve()
-        // console.log(anotherGA.population())
-    }
-    // var i=0
-    // while(anotherGA.bestScore()<0 )
-    // {
 
-    //     anotherGA.evolve()
-    // }
+    }
+
     console.log("best")
     var x = anotherGA.best()
     console.log(x)
     console.log("best Score")
     console.log( anotherGA.bestScore())
+
+
+    drawingDesign(x)
 
 }
 
@@ -452,7 +452,7 @@ function fitnessFunction(phenotype)
 
 
             //If the Item don't block the window
-            if(Item[3])
+            if(Item[3]==null)
             {
                 if(WindowIndex[0]<Item[1] && WindowIndex[0]<Item[2] && WindowIndex[1]<Item[1] && WindowIndex[1]<Item[2])
                 {score+=1}
@@ -607,42 +607,43 @@ function mod(x,y)
 
 function drawingDesign(phenotype)
 {
+    
+
     for (key in phenotype)
     {
         if (phenotype.hasOwnProperty(key))
         {
             var Item = phenotype[key]
             var wall = whichWall(Item)
-            console.log(wall)
             if(wall == 0)
             {
-                ctx.rect(500+Item[1],10,500+Item[1]+Item[2],10+Item[4])
+                ctx.fillStyle = '#777'
+                ctx.fillRect(500+Item[1],10,Item[2]-Item[1],Item[4])
                 ctx.lineWidth = "10";
-                ctx.strokeStyle = "black";
                 ctx.stroke();
             }
 
             if(wall == 2)
             {
-                ctx.rect(areaWidth-Item[4],10+Item[1],areaWidth,10+Item[2])
+                ctx.fillStyle = '#888'
+                ctx.fillRect(500+areaWidth-Item[4],10+Item[2]-Item[1],Item[4],Item[2]-Item[1])
                 ctx.lineWidth = "10";
-            ctx.strokeStyle = "blue";
-            ctx.stroke();
+                ctx.stroke();
             }
 
             if(wall == 1)
             {
-                ctx.rect(areaWidth-Item[2],areaHeight-Item[4],areaWidth-Item[1],areaHeight)
+                ctx.fillStyle = '#999'
+                ctx.fillRect(500+(2*areaWidth)+areaHeight-Item[2],10+areaHeight-Item[4],Item[2]-Item[1],Item[4])
                 ctx.lineWidth = "10";
-                ctx.strokeStyle = "green";
                 ctx.stroke();
             }
 
             if(wall == 3)
             {
-                ctx.rect(500,10+Item[1],500+Item[4],10+Item[2])
+                ctx.fillStyle = '#222'
+                ctx.fillRect(500,(2*areaHeight)+(2*areaWidth)-Item[2],Item[4],Item[2]-Item[1])
                 ctx.lineWidth = "10";
-                ctx.strokeStyle = "gray";
                 ctx.stroke();
             }
 
