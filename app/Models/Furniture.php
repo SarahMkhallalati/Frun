@@ -78,9 +78,9 @@ class Furniture extends Model
         return Furniture::when($materialId, function ($furnatiure) use ($materialId) {
             $furnatiure->where('material_id', $materialId);
         })->when($priceMin, function ($furnatiure) use ($priceMin) {
-            $furnatiure->where('price','>', $priceMin);
+            $furnatiure->where('price','>=', $priceMin);
         })->when($materialId, function ($furnatiure) use ($priceMax) {
-            $furnatiure->where('price','<', $priceMax);
+            $furnatiure->where('price','<=', $priceMax);
         })
             ->join('materials', 'materials.id', '=', 'furniture.material_id')
             ->select('furniture.*', 'materials.name as material')
