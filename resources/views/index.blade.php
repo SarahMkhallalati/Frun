@@ -106,7 +106,7 @@ var AddFav = document.getElementById("AddToFavBT");
        price = document.querySelector('input[name="price_group"]:checked')?.value ?? 0;
        if(!materialId && !price)
        alert('choose some filters first')
-      else  window.location.href = "/filter?material_id="+materialId+"&price="+price;
+      else  window.location.href = "/furniture/public/filter?material_id="+materialId+"&price="+price;
 
 
     }
