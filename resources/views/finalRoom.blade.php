@@ -15,12 +15,13 @@
 
   @section('body')
   @include('navBar')
-    <body onload="DRfunction();" >
+    <body onload="DRfunction();">
+        <div id="colors">
+
+        </div>
         <div id="theRoom" >
 
         </div>
-
-        <button onclick="getItems();"> test </button>
     </body>
   @include("footer");
 @endsection
@@ -29,227 +30,214 @@
 <script src="{{asset ('/js/app.js')}}"></script>
 <script type="text/javascript">
 
-    var areaWidth = localStorage.getItem('areaWidth')*100;
-    var areaHeight = localStorage.getItem('areaHeight')*100;
-    var Door = localStorage.getItem('door');
-    var Window = localStorage.getItem('window');
-    var theRoom = document.getElementById("theRoom");
-    var selectedIDs = localStorage.getItem('selectedItems');
-    var roomKind = localStorage.getItem('roomKind');
-    var rightIndex,bottomIndex,leftIndex
-    var topWall,bottomWall,leftWall,rightWall;
-    var DoorDistance, WindowDistance;
-    var doorPosition, windowPosition;
-    var selectedItems=[];
-    var windowStartIn, windowEndIn;
-    var doosStartIn, doorEndIn;
-    var roomArray=[];
-    var perimeter
-    var c,ctx;
-    var DoorIndex,WindowIndex
-    var FirstItem = []
-    var SecondItem = []
-    var population
-    var allItems=[]
-    var stringPop='{'
-    var selectedID
-    var maxDepth
+var areaWidth = localStorage.getItem('areaWidth')*100;
+var areaHeight = localStorage.getItem('areaHeight')*100;
+var Door = localStorage.getItem('door');
+var Window = localStorage.getItem('window');
+var theRoom = document.getElementById("theRoom");
+var selectedIDs = localStorage.getItem('selectedItems');
+var roomKind = localStorage.getItem('roomKind');
+var rightIndex,bottomIndex,leftIndex
+var topWall,bottomWall,leftWall,rightWall;
+var DoorDistance, WindowDistance;
+var doorPosition, windowPosition;
+var selectedItems=[];
+var windowStartIn, windowEndIn;
+var doosStartIn, doorEndIn;
+var roomArray=[];
+var perimeter
+var c,ctx;
+var DoorIndex,WindowIndex
+var FirstItem = []
+var SecondItem = []
+var population
+var allItems=[]
+var stringPop='{'
+var selectedID
+var maxDepth
 
-    function DRfunction()
+function DRfunction()
+{
+    theRoom.innerHTML= '<canvas id="myCanvas" width="1520" height="'+(areaHeight+50)+'" ></canvas>';
+    c=document.getElementById("myCanvas");
+    ctx=c.getContext("2d");
+    ctx.fillStyle = '#bbb'
+    ctx.fillRect(500, 10, areaWidth, areaHeight);
+
+    topWall = [500,10,500+(areaWidth),10];
+    bottomWall = [500, 10+(areaHeight),500+(areaWidth),10+(areaHeight)];
+    leftWall = [500,10,500, 10+(areaHeight)];
+    rightWall = [500+(areaWidth),10,500+(areaWidth),10+(areaHeight)];
+
+    ctx.lineWidth = "10";
+    ctx.strokeStyle = "black";
+    ctx.stroke();
+
+
+
+    if(Door!=null)
     {
-        theRoom.innerHTML= '<canvas id="myCanvas" width="1520" height="'+(areaHeight+50)+'" ></canvas>';
-        c=document.getElementById("myCanvas");
-        ctx=c.getContext("2d");
-        ctx.fillStyle = '#eee'
-        ctx.fillRect(500, 10, areaWidth, areaHeight);
-
-
-        topWall = [500,10,500+(areaWidth),10];
-        bottomWall = [500, 10+(areaHeight),500+(areaWidth),10+(areaHeight)];
-        leftWall = [500,10,500, 10+(areaHeight)];
-        rightWall = [500+(areaWidth),10,500+(areaWidth),10+(areaHeight)];
-
-        ctx.lineWidth = "10";
-        // ctx.strokeStyle = "black";
-        ctx.stroke();
-
-
-
-        if(Door!=null)
-        {
-            var door = Door.split(',').map(function(item) {
-            return parseInt(item, 10);
-            });
-            var dx=door[1]- door[3]+10; if(dx<0){  dx=dx*-1;}
-            var dy=door[2]- door[4]+10; if(dy<0){  dy=dy*-1;}
-            if(dx>=dy)
-            {
-                drawLine(ctx, door[1], door[2], door[3], door[2]);
-                if(topWall[1]+5<door[1]<topWall[1]-5){doorPosition=0;}
-                else doorPosition=1;
-
-                if(door[1]<door[3]) {DoorDistance = door[1]-500;}
-                else {DoorDistance = door[3]-500;}
-
-            }
-            else if(dx<dy)
-            {
-                drawLine(ctx,  door[1], door[2], door[1], door[4]);
-                if(leftWall[0]+5<door[0]<leftWall[0]-5){doorPosition=2;}
-                else doorPosition=3;
-
-                if(door[2]<door[3]) {DoorDistance = door[2]-10;}
-                else {DoorDistance = door[3]-10;}
-            }
-            localStorage.setItem('doorPosition',doorPosition)
-
-        }
-
-        if(Window!=null)
-        {
-            var window = Window.split(',').map(function(item) {
-                return parseInt(item, 10);
-            });
-            var dx=window[1]- window[3]+10; if(dx<0){  dx=dx*-1;}
-            var dy=window[2]- window[4]+10; if(dy<0){  dy=dy*-1;}
-            if(dx>=dy)
-            {
-                drawLine(ctx, window[1], window[2], window[3], window[2]);
-                if(topWall[1]+5<window[1]<topWall[1]-5){windowPosition=0;}
-                else windowPosition=1;
-
-                if(window[1]<window[3]) {WindowDistance = window[1]-500;}
-                else {WindowDistance = window[3]-500;}
-            }
-            else if(dx<dy)
-            {
-                drawLine(ctx,  window[1], window[2], window[1], window[4]);
-                if(leftWall[0]+5<window[0]<leftWall[0]-5){windowPosition=2;}
-                else windowPosition=3;
-
-                if(window[2]<window[3]) {WindowDistance = window[2]-10;}
-                else {WindowDistance = window[3]-10;}
-
-            }
-
-            localStorage.setItem('windowPosition',windowPosition)
-        }
-
-
-        perimeter = areaHeight*2 + areaWidth*2;
-        localStorage.setItem('perimeter',perimeter)
-        for(var i=0 ; i<perimeter ; i++)
-        {
-            roomArray.push(i);
-        }
-
-        rightIndex = areaWidth;
-        bottomIndex = rightIndex+areaHeight;
-        leftIndex = bottomIndex+areaWidth;
-
-        localStorage.setItem('rightIndex',rightIndex)
-        localStorage.setItem('bottomIndex',bottomIndex)
-        localStorage.setItem('leftIndex',leftIndex)
-
-        if(doorPosition==0)
-        {
-            doosStartIn = DoorDistance;
-            doorEndIn = doosStartIn+door[0];
-        }
-        if(doorPosition==1)
-        {
-            doosStartIn = bottomIndex+(areaWidth-(DoorDistance+door[0]));
-            doorEndIn = doosStartIn+door[0];
-        }
-        if(doorPosition==2)
-        {
-            doosStartIn = leftIndex+(areaHeight-(DoorDistance+door[0]));
-            doorEndIn = doosStartIn+door[0];
-        }
-        if(doorPosition==3)
-        {
-            doosStartIn = rightIndex+DoorDistance;
-            doorEndIn = doosStartIn+door[0];
-        }
-
-        DoorIndex =[doosStartIn,doorEndIn]
-        localStorage.setItem('DoorIndex',DoorIndex)
-
-
-        if(windowPosition==0)
-        {
-            windowStartIn = WindowDistance;
-            windowEndIn = windowStartIn+window[0];
-        }
-        if(windowPosition==1)
-        {
-            windowStartIn = bottomIndex+(areaWidth-(WindowDistance+window[0]));
-            windowEndIn = windowStartIn+window[0];
-        }
-        if(windowPosition==2)
-        {
-            windowStartIn = leftIndex+(areaHeight-(WindowDistance+window[0]));
-            windowEndIn = windowStartIn+window[0];
-        }
-        if(windowPosition==3)
-        {
-            windowStartIn = rightIndex+WindowDistance;
-            windowEndIn = windowStartIn+window[0];
-        }
-        WindowIndex =[windowStartIn,windowEndIn]
-        localStorage.setItem('WindowIndex',WindowIndex)
-
-
-        var selectedID = selectedIDs.split(',').map(function(item)
-        {
-            return parseInt(item, 10);
+        var door = Door.split(',').map(function(item) {
+        return parseInt(item, 10);
         });
+        var dx=door[1]- door[3]+10; if(dx<0){  dx=dx*-1;}
+        var dy=door[2]- door[4]+10; if(dy<0){  dy=dy*-1;}
+        if(dx>=dy)
+        {
+            drawLine(ctx, door[1], door[2], door[3], door[2]);
+            if(topWall[1]+5<door[1]<topWall[1]-5){doorPosition=0;}
+            else doorPosition=1;
+            if(door[1]<door[3]) {DoorDistance = door[1]-500;}
+            else {DoorDistance = door[3]-500;}
 
-        $.ajax({
-        method: 'GET',
-        url: 'get_item_byID',
-        dataType: 'json',
-        data: {
-            IDs:selectedID
         }
-        }).done((json) => {
-            var Items=json.selecetdItems;
-
-        }).fail((json)=>{
-            console.log('fail');
-        });
-
+        else if(dx<dy)
+        {
+            drawLine(ctx,  door[1], door[2], door[1], door[4]);
+            if(leftWall[0]+5<door[0]<leftWall[0]-5){doorPosition=2;}
+            else doorPosition=3;
+            if(door[2]<door[3]) {DoorDistance = door[2]-10;}
+            else {DoorDistance = door[3]-10;}
+        }
+        localStorage.setItem('doorPosition',doorPosition)
 
     }
 
+    if(Window!=null)
+        {
+        var window = Window.split(',').map(function(item) {
+            return parseInt(item, 10);
+        });
+        var dx=window[1]- window[3]+10; if(dx<0){  dx=dx*-1;}
+        var dy=window[2]- window[4]+10; if(dy<0){  dy=dy*-1;}
+        if(dx>=dy)
+        {
+            drawLine(ctx, window[1], window[2], window[3], window[2]);
+            if(topWall[1]+5<window[1]<topWall[1]-5){windowPosition=0;}
+            else windowPosition=1;
 
-function getItems()
-{
+            if(window[1]<window[3]) {WindowDistance = window[1]-500;}
+            else {WindowDistance = window[3]-500;}
+        }
+        else if(dx<dy)
+        {
+            drawLine(ctx,  window[1], window[2], window[1], window[4]);
+            if(leftWall[0]+5<window[0]<leftWall[0]-5){windowPosition=2;}
+            else windowPosition=3;
+
+            if(window[2]<window[3]) {WindowDistance = window[2]-10;}
+            else {WindowDistance = window[3]-10;}
+
+        }
+
+        localStorage.setItem('windowPosition',windowPosition)
+    }
+
+
+    perimeter = areaHeight*2 + areaWidth*2;
+    localStorage.setItem('perimeter',perimeter)
+    for(var i=0 ; i<perimeter ; i++)
+    {
+        roomArray.push(i);
+    }
+
+    rightIndex = areaWidth;
+    bottomIndex = rightIndex+areaHeight;
+    leftIndex = bottomIndex+areaWidth;
+
+    localStorage.setItem('rightIndex',rightIndex)
+    localStorage.setItem('bottomIndex',bottomIndex)
+    localStorage.setItem('leftIndex',leftIndex)
+
+    if(doorPosition==0)
+    {
+        doosStartIn = DoorDistance;
+        doorEndIn = doosStartIn+door[0];
+    }
+    if(doorPosition==1)
+    {
+        doosStartIn = bottomIndex+(areaWidth-(DoorDistance+door[0]));
+        doorEndIn = doosStartIn+door[0];
+    }
+    if(doorPosition==2)
+    {
+        doosStartIn = leftIndex+(areaHeight-(DoorDistance+door[0]));
+        doorEndIn = doosStartIn+door[0];
+    }
+    if(doorPosition==3)
+    {
+        doosStartIn = rightIndex+DoorDistance;
+        doorEndIn = doosStartIn+door[0];
+    }
+
+    DoorIndex =[doosStartIn,doorEndIn]
+    localStorage.setItem('DoorIndex',DoorIndex)
+
+
+    if(windowPosition==0)
+    {
+        windowStartIn = WindowDistance;
+        windowEndIn = windowStartIn+window[0];
+    }
+    if(windowPosition==1)
+    {
+        windowStartIn = bottomIndex+(areaWidth-(WindowDistance+window[0]));
+        windowEndIn = windowStartIn+window[0];
+    }
+    if(windowPosition==2)
+    {
+        windowStartIn = leftIndex+(areaHeight-(WindowDistance+window[0]));
+        windowEndIn = windowStartIn+window[0];
+    }
+    if(windowPosition==3)
+    {
+        windowStartIn = rightIndex+WindowDistance;
+        windowEndIn = windowStartIn+window[0];
+    }
+    WindowIndex =[windowStartIn,windowEndIn]
+    localStorage.setItem('WindowIndex',WindowIndex)
+
+
+    var selectedID = selectedIDs.split(',').map(function(item)
+    {
+        return parseInt(item, 10);
+    });
+
+    $.ajax({
+    method: 'GET',
+    url: 'get_item_byID',
+    dataType: 'json',
+    data: {
+        IDs:selectedID
+    }
+    }).done((json) => {
+        var Items=json.selecetdItems;
+
+    }).fail((json)=>{
+        console.log('fail');
+    });
+
+
+
     setPopulation()
     var anotherGA = geneticalgorithm.clone({
-        mutationFunction: mutationFunction,
-        crossoverFunction: crossoverFunction,
-        fitnessFunction: fitnessFunction,
-        population: [population],
-        populationSize: 20
+    mutationFunction: mutationFunction,
+    crossoverFunction: crossoverFunction,
+    fitnessFunction: fitnessFunction,
+    population: [population],
+    populationSize: 20
     })
     console.log("population")
     console.log( anotherGA.population())
     for(var i=0; i<10; i++)
-    {
-        anotherGA.evolve()
-
-    }
-
-    console.log("best")
+    { anotherGA.evolve()}
     var x = anotherGA.best()
-    console.log(x)
-    console.log("best Score")
-    console.log( anotherGA.bestScore())
-
-
     drawingDesign(x)
 
+    // console.log("best")
+    // console.log(x)
+    // console.log("best Score")
+    // console.log( anotherGA.bestScore())
 }
 
 function setPopulation()
@@ -607,17 +595,29 @@ function mod(x,y)
 
 function drawingDesign(phenotype)
 {
-    
-
     for (key in phenotype)
     {
         if (phenotype.hasOwnProperty(key))
         {
             var Item = phenotype[key]
+            var ItemName = Item[0].split(' ')
             var wall = whichWall(Item)
+            if(ItemName[0]=="Bed" || ItemName[1]=="Bed")
+            {
+                ctx.fillStyle = 'blue'
+            }
+            if(ItemName[0]=="Closet" || ItemName[1]=="Closet")
+            {
+                ctx.fillStyle = 'green'
+            }
+            if(ItemName[0]=="Kommode" || ItemName[1]=="Kommode")
+            {
+                ctx.fillStyle = 'yellow'
+            }
+
             if(wall == 0)
             {
-                ctx.fillStyle = '#777'
+                // ctx.fillStyle = '#777'
                 ctx.fillRect(500+Item[1],10,Item[2]-Item[1],Item[4])
                 ctx.lineWidth = "10";
                 ctx.stroke();
@@ -625,7 +625,7 @@ function drawingDesign(phenotype)
 
             if(wall == 2)
             {
-                ctx.fillStyle = '#888'
+                // ctx.fillStyle = '#888'
                 ctx.fillRect(500+areaWidth-Item[4],10+Item[2]-Item[1],Item[4],Item[2]-Item[1])
                 ctx.lineWidth = "10";
                 ctx.stroke();
@@ -633,7 +633,7 @@ function drawingDesign(phenotype)
 
             if(wall == 1)
             {
-                ctx.fillStyle = '#999'
+                // ctx.fillStyle = '#999'
                 ctx.fillRect(500+(2*areaWidth)+areaHeight-Item[2],10+areaHeight-Item[4],Item[2]-Item[1],Item[4])
                 ctx.lineWidth = "10";
                 ctx.stroke();
@@ -641,15 +641,13 @@ function drawingDesign(phenotype)
 
             if(wall == 3)
             {
-                ctx.fillStyle = '#222'
+                // ctx.fillStyle = '#222'
                 ctx.fillRect(500,(2*areaHeight)+(2*areaWidth)-Item[2],Item[4],Item[2]-Item[1])
                 ctx.lineWidth = "10";
                 ctx.stroke();
             }
 
         }
-
-
     }
 }
 

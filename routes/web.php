@@ -21,8 +21,11 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/',[Controller::class,'frniture'])->name('Index');
+Route::get('/',[Controller::class,'faveorite'])->name('Index');
 
 Route::get('AddToFav',[Controller::class,'CreatFav'])->name('AddToFav');
+
+Route::get('favList',[Controller::class,'favList'])->name('favList');
 
 Route::get('/bedRoom',[Controller::class,'bedRooms'])->name('bed_rooms');
 

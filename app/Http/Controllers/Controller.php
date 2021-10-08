@@ -27,6 +27,13 @@ class Controller extends BaseController
 
     }
 
+    public function faveorite(Request $request)
+    {
+        $faveorite = CustomerFurniture::get();
+        return view('index',['faveorite' => $faveorite]);
+
+    }
+
     public function bedRooms(Request $request)
     {
         $bedRooms = Furniture::getBedRooms();
@@ -63,6 +70,17 @@ class Controller extends BaseController
         return Response()->json([],200);
         }
         return Response()->json(['message' => "already exist"],401);
+    }
+
+    public function favList(Request $request)
+    {
+        //$classified = Classified::where("fru-id",$request->get("ID"))->first();
+        $favlist = CustomerFurniture::where("cust_id",1)
+        ->get("ID");
+
+        return Response()->json(['fav_ID' => $favlist],200);
+
+
     }
 
 

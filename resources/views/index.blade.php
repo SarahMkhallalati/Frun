@@ -11,46 +11,44 @@
 
 <hr>
 <aside>
-    <div style="inline-block; padding-bottom:10px;" >
+    <div style="inline; padding-bottom:10px; padding-left:30px;" >
        <b style="font-size:20px;">Filtered With:</b>
        <b style="margin-left:20px;">Material:</b>
        <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="material_id" id="inlineRadio1" value="7">
           <label class="form-check-label" for="inlineRadio1">Wood</label>
         </div>
-   <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="3">
-     <label class="form-check-label" for="inlineRadio2">Fabric</label>
-   </div>
-   <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio1" value="5">
-     <label class="form-check-label" for="inlineRadio1">Leather</label>
-   </div>
-   <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="1">
-     <label class="form-check-label" for="inlineRadio2">Bambo</label>
-   </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="3">
+            <label class="form-check-label" for="inlineRadio2">Fabric</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="material_id" id="inlineRadio1" value="5">
+            <label class="form-check-label" for="inlineRadio1">Leather</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="material_id" id="inlineRadio2" value="1">
+            <label class="form-check-label" for="inlineRadio2">Bambo</label>
+        </div>
         <b style="margin-left:40px;">Price:</b>
         <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="1">
-     <label class="form-check-label" for="inlineRadio2">80$-200$</label>
-   </div>
-   <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="2">
-     <label class="form-check-label" for="inlineRadio2">205$-300$</label>
-   </div>
-   <div class="form-check form-check-inline">
-     <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="3">
-     <label class="form-check-label" for="inlineRadio2">More than 300$</label>
-   </div>
-    <div>
-        <button type="button" onclick="filter()">Filter</button>
-    </div>
+            <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="1">
+            <label class="form-check-label" for="inlineRadio2">80$-200$</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="2">
+            <label class="form-check-label" for="inlineRadio2">205$-300$</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="price_group" id="inlineRadio2" value="3">
+            <label class="form-check-label" for="inlineRadio2">More than 300$</label>
+        </div>
+        <button type="button" class="btn btn-success">Find</button>
 
-     </div>
+
+    </div>
     </aside>
 <h2  class="bestselling"> Cheapest </h2>
-<button style="margin-left: 1200px;" type="button" class="btn btn-primary">VIEW ALL</button>
 <div class="card-group">
 
     <div class="row">
@@ -63,9 +61,17 @@
                 <p class="card-text">width: {{$furniture->width}} height: {{$furniture['height']}}  depth: {{$furniture->depth}} <br>
                   price:{{$furniture->price}}
                 </p>
+                @foreach ($faveorite as $fav)
+                @if ($furniture->ID == $fav->furn_id)
+                <button id="InFav" style="margin-left:120px;"  class="btn btn-success" type="button" onclick="alterFav();" >
+                    <strong class="btn-text">Already in favorite </strong>
+                  </button>
+                @else
                 <button id="AddToFavBT" style="margin-left:120px;"  class="btn btn-primary" type="button" onclick="AddToFav({{$furniture->ID}});" >
                   <strong class="btn-text">Add to favorite <i class="far fa-heart"></i></i></strong>
                 </button>
+                @endif
+                @endforeach
               </div>
             </div>
           </div>
@@ -83,10 +89,15 @@
 @section('scripts')
 
 <script>
-var AddFav = document.getElementById("AddToFavBT");
+
+
+function alterFav()
+{
+    alter("Already exisit");
+}
+
     function AddToFav($id)
     {
-
         $.ajax({
             method: 'GET',
             url: 'AddToFav',
@@ -97,7 +108,7 @@ var AddFav = document.getElementById("AddToFavBT");
 
         }).done((json) =>{
             alert("Added to favorite");
-        }).fail((json)=>{alert("Already exisit");});
+        })
     }
 
     function filter()
@@ -107,9 +118,9 @@ var AddFav = document.getElementById("AddToFavBT");
        if(!materialId && !price)
        alert('choose some filters first')
       else  window.location.href = "/furniture/public/filter?material_id="+materialId+"&price="+price;
-
-
     }
+
+
 
 </script>
 @endsection
