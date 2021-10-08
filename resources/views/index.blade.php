@@ -61,17 +61,15 @@
                 <p class="card-text">width: {{$furniture->width}} height: {{$furniture['height']}}  depth: {{$furniture->depth}} <br>
                   price:{{$furniture->price}}
                 </p>
-                @foreach ($faveorite as $fav)
-                @if ($furniture->ID == $fav->furn_id)
-                <button id="InFav" style="margin-left:120px;"  class="btn btn-success" type="button" onclick="alterFav();" >
+                @if ($favorite->contains($furniture->ID))
+                <button id="InFav_{{$furniture->ID}}" style="margin-left:120px;"  class="btn btn-success" type="button" onclick="alterFav({{$furniture->ID}});" >
                     <strong class="btn-text">Already in favorite </strong>
                   </button>
                 @else
-                <button id="AddToFavBT" style="margin-left:120px;"  class="btn btn-primary" type="button" onclick="AddToFav({{$furniture->ID}});" >
+                <button id="AddToFavBT_{{$furniture->ID}}" style="margin-left:120px;"  class="btn btn-primary" type="button" onclick="AddToFav({{$furniture->ID}});" >
                   <strong class="btn-text">Add to favorite <i class="far fa-heart"></i></i></strong>
                 </button>
                 @endif
-                @endforeach
               </div>
             </div>
           </div>
@@ -91,13 +89,27 @@
 <script>
 
 
-function alterFav()
+function alterFav($id)
 {
-    alter("Already exisit");
+    $("#InFav_"+$id).append(`<i class="fa fa-spinner fa-spin"></i>`)
+    $.ajax({
+            method: 'GET',
+            url: 'DelFav',
+            dataType: 'json',
+            data: {
+                ID:$id
+            },
+        }).done((json) =>{
+            $("#InFav_"+$id).replaceWith
+                    (`<button id="AddToFavBT_${$id}" style="margin-left:120px;"  class="btn btn-primary" type="button" onclick="AddToFav(${$id});" >
+                    <strong class="btn-text">Add to favorite <i class="far fa-heart"></i></i></strong>
+                  </button>`);
+        })
 }
 
     function AddToFav($id)
     {
+        $("#AddToFavBT_"+$id).append(`<i class="fa fa-spinner fa-spin"></i>`)
         $.ajax({
             method: 'GET',
             url: 'AddToFav',
@@ -105,9 +117,11 @@ function alterFav()
             data: {
                 ID:$id
             },
-
         }).done((json) =>{
-            alert("Added to favorite");
+            $("#AddToFavBT_"+$id).replaceWith(
+                    `<button id="InFav_${$id}" style="margin-left:120px;"  class="btn btn-success" type="button" onclick="alterFav(${$id});" >
+                    <strong class="btn-text">Already in favorite </strong>
+                  </button>`);
         })
     }
 

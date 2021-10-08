@@ -11,4 +11,10 @@ class CustomerFurniture extends Model
     protected $table = 'cus_own';
     public $timestamps = false;
     protected $fillable = ['cust_id', 'furn_id'];
+
+    public static function getCustomerFaveorite($customerId = 1)
+    {
+        return CustomerFurniture::where('cust_id', $customerId)
+            ->pluck('furn_id');
+    }
 }

@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Classified;
 use App\Models\CustomerFurniture;
 use App\Models\Furniture;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class Controller extends BaseController
 {
@@ -19,7 +22,9 @@ class Controller extends BaseController
     public function frniture(Request $request)
     {
         $furnitures = Furniture::get();
-        return view('index', ['furnitures' => $furnitures]);
+        $faveorite = CustomerFurniture::getCustomerFaveorite(1);
+        return view('index', ['furnitures' => $furnitures,
+        'favorite' => $faveorite ]);
 
     }
 
@@ -149,6 +154,35 @@ class Controller extends BaseController
         $furnitures = Furniture::filter($materialId, $priceMin, $priceMax);
         return view('index', ['furnitures' => $furnitures]);
 
+    }
+
+    public function deleteFavorite(Request $request)
+    {
+        $customerFurniture = CustomerFurniture::where('cust_id',1)
+                            ->where('furn_id',$request->get('ID'))
+                            ->firstOrFail();
+        $customerFurniture->delete();
+        return response()->json(['messsage' => 'deletd'],200);
+    }
+
+
+    public function register(Request $request)
+    {
+        $validtor = Validator::make($request->all(),
+        [
+            'username' => ['required','unique:customers,user-name'],
+            'passowrd' => ['required','max:20'],
+            ///'confirm_password' => ['required',]
+        ]);
+        if($validtor->fails())
+        return back()->withErrors($validtor->getMessageBag());
+        User::create(
+            [
+                'user-name' => $request->get('username'),
+                'password' => Hash::make($request->get('password')),
+            ]
+            );
+        return redirect('/');
     }
 
 }

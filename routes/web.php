@@ -21,9 +21,11 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/',[Controller::class,'frniture'])->name('Index');
-Route::get('/',[Controller::class,'faveorite'])->name('Index');
+//Route::get('/',[Controller::class,'faveorite'])->name('Index');
 
 Route::get('AddToFav',[Controller::class,'CreatFav'])->name('AddToFav');
+
+Route::get('DelFav',[Controller::class,'deleteFavorite'])->name('DelFav');
 
 Route::get('favList',[Controller::class,'favList'])->name('favList');
 
@@ -46,6 +48,15 @@ Route::get('get_item_byID',[Controller::class,'getByID'])->name('get_item_byID')
 Route::view('account', 'account')->name('account');
 
 Route::view('login', 'login')->name('login');
+
+Route::Post('login', [Controller::class,'login'])->name('login');
+
+
+Route::view('register', 'register')->name('register');
+
+Route::Post('register', [Controller::class,'register'])->name('register');
+
+
 
 Route::get('/officRoom',[Controller::class,'officRoom'])->name('officRoom');
 
