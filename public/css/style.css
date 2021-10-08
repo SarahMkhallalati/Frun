@@ -11,31 +11,31 @@
     padding: 10px 5px 5px 5px;
     display: inline;
     color:#363636;
-    font-family: 'Cabin';}          
-}
+    font-family: 'Cabin';}
+
 nav a {
 	text-decoration: none;
     color: black;
-    margin-left:150px;	 
+    margin-left:150px;
     font-family: 'Cabin';}
 
 .input-group
-{  
+{
 	margin: 5px;
-	width: 260px; 
+	width: 260px;
     display: inline-block;
 }
 
 #main_cont{ /*display: flex;*/
-			width: 100%; 
-			height:100%; 
+			width: 100%;
+			height:100%;
 			background-image: url(IKEA/images/cover.jpg);
 			background-size: cover;
 			background-repeat: no-repeat;
 		    background-position: center;
 		    border-radius: 5px;
 		 }
-		
+
 		#Welcome { color:white;
 		           font-family: "Dancing Script";
 		           font-weight: bold;
@@ -43,10 +43,10 @@ nav a {
 		           text-align: center;
 		           margin: auto;
 		           padding-top:250px;
-                  /* display: absolute; */     
+                  /* display: absolute; */
 		          }
 
-	          
+
 	 .bestselling , .sale{font-family: "Dancing Script";
 	              font-weight: bold;
 	              text-shadow: 1px 1px  grey;
@@ -55,7 +55,7 @@ nav a {
 	              display: inline;}
 
 
-	.card-title , .card-text {text-align: center;} 
+	.card-title , .card-text {text-align: center;}
 
 
 
@@ -89,7 +89,7 @@ nav a {
 	#in-footer{
 		       text-align: left;
 	           padding-left: 17px;
-	          }            
+	          }
 	.ul-footer a{
 		text-decoration: none;
 	            }

@@ -50,7 +50,7 @@ class Furniture extends Model
     public static function getDataByID($IDs)
     {
 
-        return Furniture::whereIn('ID', $IDs)
+        return Furniture::whereIn('furniture.ID', $IDs)
             ->join('materials', 'materials.id', '=', 'furniture.material_id')
             ->select('furniture.*', 'materials.name as material')
             ->get();
@@ -79,7 +79,7 @@ class Furniture extends Model
             $furnatiure->where('material_id', $materialId);
         })->when($priceMin, function ($furnatiure) use ($priceMin) {
             $furnatiure->where('price','>=', $priceMin);
-        })->when($materialId, function ($furnatiure) use ($priceMax) {
+        })->when($priceMax, function ($furnatiure) use ($priceMax) {
             $furnatiure->where('price','<=', $priceMax);
         })
             ->join('materials', 'materials.id', '=', 'furniture.material_id')
