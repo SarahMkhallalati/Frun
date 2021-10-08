@@ -104,6 +104,10 @@ function alterFav($id)
                     (`<button id="AddToFavBT_${$id}" style="margin-left:120px;"  class="btn btn-primary" type="button" onclick="AddToFav(${$id});" >
                     <strong class="btn-text">Add to favorite <i class="far fa-heart"></i></i></strong>
                   </button>`);
+        }).fail((response) => {
+            if(response.status == 401)
+            alert('you must login first')
+            window.location.href = '/login';
         })
 }
 
