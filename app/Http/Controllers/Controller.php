@@ -12,6 +12,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -182,7 +183,23 @@ class Controller extends BaseController
                 'password' => Hash::make($request->get('password')),
             ]
             );
-        return redirect('/');
+        return redirect('/login');
+    }
+
+    public function login(Request $request)
+    {
+        $validtor = Validator::make($request->all(),
+        [
+            'username' => ['required'],
+            'passowrd' => ['required','max:20'],
+        ]);
+        if($validtor->fails())
+        return back()->withErrors($validtor->getMessageBag());
+        if(Auth::attempt(['user-name' => $request->get('username'), 'password' => $request->get('password')]))
+        {
+             return redirect('/');
+        }
+        return back()->withErrors('username or password wrong');
     }
 
 }
