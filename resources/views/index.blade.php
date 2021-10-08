@@ -117,11 +117,15 @@ function alterFav($id)
             data: {
                 ID:$id
             },
-        }).done((json) =>{
+        }).done((json) => {
             $("#AddToFavBT_"+$id).replaceWith(
                     `<button id="InFav_${$id}" style="margin-left:120px;"  class="btn btn-success" type="button" onclick="alterFav(${$id});" >
                     <strong class="btn-text">Already in favorite </strong>
                   </button>`);
+        }).fail((response) => {
+            if(response.status == 401)
+            alert('you must login first')
+            window.location.href = '/login';
         })
     }
 

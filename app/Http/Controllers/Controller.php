@@ -23,7 +23,10 @@ class Controller extends BaseController
     public function frniture(Request $request)
     {
         $furnitures = Furniture::get();
-        $faveorite = CustomerFurniture::getCustomerFaveorite(1);
+        if(Auth::guard('web')->check())
+        $faveorite = CustomerFurniture::
+        getCustomerFaveorite(Auth::guard('web')->user()->ID);
+        else $faveorite = collect();
         return view('index', ['furnitures' => $furnitures,
         'favorite' => $faveorite ]);
 
@@ -59,11 +62,11 @@ class Controller extends BaseController
     public function CreatFav(Request $request)
     {
         //$classified = Classified::where("fru-id",$request->get("ID"))->first();
-        $customerFur = CustomerFurniture::where("cust_id", 1)
+        $customerFur = CustomerFurniture::where("cust_id", auth()->user()->ID)
             ->where("furn_id", $request->get("ID"))
             ->first();
         if (empty($customerFur)) {CustomerFurniture::create([
-            "cust_id" => 1,
+            "cust_id" => auth()->user()->ID,
             "furn_id" => $request->get("ID"),
         ]);
             return Response()->json([], 200);
@@ -74,7 +77,7 @@ class Controller extends BaseController
     public function favList(Request $request)
     {
         //$classified = Classified::where("fru-id",$request->get("ID"))->first();
-        $favlist = CustomerFurniture::where("cust_id",1)
+        $favlist = CustomerFurniture::where("cust_id",auth()->user()->ID)
         ->get("ID");
 
         return Response()->json(['fav_ID' => $favlist],200);
@@ -159,7 +162,7 @@ class Controller extends BaseController
 
     public function deleteFavorite(Request $request)
     {
-        $customerFurniture = CustomerFurniture::where('cust_id',1)
+        $customerFurniture = CustomerFurniture::where('cust_id',auth()->user()->ID)
                             ->where('furn_id',$request->get('ID'))
                             ->firstOrFail();
         $customerFurniture->delete();
@@ -169,11 +172,12 @@ class Controller extends BaseController
 
     public function register(Request $request)
     {
+        return $request->all();
         $validtor = Validator::make($request->all(),
         [
             'username' => ['required','unique:customers,user-name'],
-            'passowrd' => ['required','max:20'],
-            ///'confirm_password' => ['required',]
+            'password' => ['required','max:20'],
+            'confirm_password' => ['required','same:password']
         ]);
         if($validtor->fails())
         return back()->withErrors($validtor->getMessageBag());
@@ -190,16 +194,26 @@ class Controller extends BaseController
     {
         $validtor = Validator::make($request->all(),
         [
-            'username' => ['required'],
-            'passowrd' => ['required','max:20'],
+            'user-name' => ['required'],
+            'password' => ['required','max:20'],
         ]);
+
         if($validtor->fails())
-        return back()->withErrors($validtor->getMessageBag());
-        if(Auth::attempt(['user-name' => $request->get('username'), 'password' => $request->get('password')]))
+        return back()->withErrors($validtor);
+        if(Auth::attempt([
+            'user-name' => $request->get('user-name'),
+            'password' => $request->get('password'),
+        ],1))
         {
-             return redirect('/');
+            return redirect('/');
         }
-        return back()->withErrors('username or password wrong');
+        return back()->withErrors(['errors'=>'wrong username or password']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return redirect('/');
     }
 
 }
